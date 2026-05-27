@@ -9,15 +9,27 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 0; margin: 0; min-height: 100vh; }
         
-        /* Navbar - Fixed the Settings button overlap */
-        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; height: 60px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
-        .navbar-content { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
-        .settings-btn { background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; display: none; padding: 0; transition: transform 0.2s; }
-        .settings-btn:hover { transform: scale(1.1); }
+        /* Navbar with Profile Dropdown */
+        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; height: 65px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .navbar-content { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; position: relative; }
+        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); text-align: center; flex-grow: 1; }
         
+        /* Profile Dropdown (Chicony Style) */
+        .profile-container { position: relative; display: none; }
+        .profile-icon { background: white; color: #007bff; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); user-select: none; }
+        .dropdown-menu { display: none; position: absolute; right: 0; top: 45px; background: white; min-width: 220px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden; z-index: 200; animation: fadeIn 0.2s ease-in-out; }
+        .dropdown-menu.show { display: block; }
+        .dropdown-header { padding: 15px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .dropdown-header strong { color: #007bff; font-size: 16px; display: block; margin-bottom: 3px; }
+        .dropdown-header span { color: #6c757d; font-size: 13px; }
+        .dropdown-item { padding: 12px 15px; display: block; text-decoration: none; color: #333; font-weight: bold; border-bottom: 1px solid #f1f1f1; cursor: pointer; transition: background 0.2s; }
+        .dropdown-item:hover { background: #f8f9fa; }
+        .dropdown-item.logout { color: #dc3545; border-bottom: none; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
         .container { max-width: 500px; margin: 30px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
-        h2.section-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 22px; font-weight: bold; border-bottom: 2px solid #007bff; display: inline-block; left: 50%; transform: translateX(-50%); position: relative; padding-bottom: 5px; }
+        h2.section-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 20px; font-weight: bold; border-bottom: 2px solid #007bff; display: inline-block; left: 50%; transform: translateX(-50%); position: relative; padding-bottom: 5px; }
         
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 15px; }
@@ -31,7 +43,6 @@
         .btn-add { background: linear-gradient(45deg, #28a745, #8bc34a); box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .btn-action { background: linear-gradient(45deg, #6f42c1, #a370f7); margin-bottom: 10px; margin-top: 0; }
         .btn-back { background: linear-gradient(45deg, #6c757d, #adb5bd); }
-        .logout-btn { background: linear-gradient(45deg, #dc3545, #ff6b6b); margin-top: 30px; }
         .hidden { display: none !important; }
         
         /* Time Options */
@@ -39,11 +50,10 @@
         .time-btn { padding: 15px; background: #f0f2f5; border: 2px solid transparent; border-radius: 12px; text-align: center; cursor: pointer; font-weight: bold; transition: all 0.2s; color: #333; }
         .time-btn.selected { background: linear-gradient(45deg, #28a745, #8bc34a); color: white; border-color: #28a745; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         
-        /* Success View */
+        /* Success & Admin Boxes */
         .success-box { background: linear-gradient(135deg, #d4edda 0%, #a3cfbb 100%); color: #155724; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; }
         .btn-edit { background: linear-gradient(45deg, #ffc107, #ff9800); color: #212529; }
         
-        /* Admin Dashboard Styles */
         .admin-section-box { margin-bottom: 25px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; }
         .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
         .stat-box { flex: 1; background: white; padding: 15px; text-align: center; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
@@ -54,14 +64,14 @@
         .breakdown-dorm h4 { color: #d81b60; margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .breakdown-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; padding: 8px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
         
-        /* Data Lists (History & Employees) */
-        .data-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .data-card strong { color: #007bff; font-size: 16px; }
-        .data-card span.highlight { color: #28a745; font-weight: bold; }
-        .data-card span.alert-text { color: #dc3545; font-size: 13px; display: block; margin-top: 5px; }
+        /* Loader Spinner */
+        .loader-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .setup-alert { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; text-align: center; }
         .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 3px 10px; border-radius: 12px; font-size: 13px; vertical-align: middle; margin-left: 10px; font-weight: bold; }
+        .data-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .readonly-text { padding: 12px 15px; background: #e9ecef; border-radius: 10px; font-weight: bold; color: #495057; border: 1px solid #ced4da; }
     </style>
 </head>
@@ -69,9 +79,19 @@
 
 <nav class="navbar">
     <div class="navbar-content">
-        <div style="width: 24px;"></div> 
-        <h2 id="navTitle">Login</h2>
-        <button class="settings-btn" id="navSettingsBtn">⚙️</button>
+        <div style="width: 36px;"></div> <h2 id="navTitle">Login</h2>
+        
+        <div class="profile-container" id="profileContainer">
+            <div class="profile-icon" id="profileIcon">👤</div>
+            <div class="dropdown-menu" id="profileDropdown">
+                <div class="dropdown-header">
+                    <strong id="dropName">User Name</strong>
+                    <span id="dropId">ID: 000000</span>
+                </div>
+                <div id="dropSettingsBtn" class="dropdown-item">⚙️ Settings</div>
+                <div id="dropLogoutBtn" class="dropdown-item logout">🚪 Logout</div>
+            </div>
+        </div>
     </div>
 </nav>
 
@@ -101,7 +121,6 @@
 
 <div class="container hidden" id="formSection">
     <h2 class="section-title">အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
-    <p style="text-align: center; font-weight: bold; color: #555; margin-top: 0;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
     
     <div id="successView" class="success-box hidden">
         <h3 style="margin-top: 0; font-size: 18px;">✅ အောင်မြင်စွာ တင်ပြီးပါပြီ</h3>
@@ -164,7 +183,6 @@
         <input type="date" id="historyDate">
     </div>
     <button id="fetchHistoryBtn" class="btn-add" style="margin-bottom: 20px;">ရှာဖွေမည်</button>
-    
     <div id="historyContent"></div>
     <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
 </div>
@@ -176,7 +194,7 @@
 </div>
 
 <div class="container hidden" id="settingsSection">
-    <h2 class="section-title">Settings Menu</h2>
+    <h2 class="section-title">Settings</h2>
     
     <div id="userSettingsDiv" class="hidden">
         <div class="admin-section-box">
@@ -202,6 +220,15 @@
             <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် အစုလိုက် တင်ရန်</h3>
             <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department ခေါင်းစဉ်များသာ လိုအပ်ပါသည်။</p>
             <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="padding: 10px; background: white;">
+            
+            <div id="uploadLoader" class="loader-container hidden">
+                <div class="spinner"></div>
+                <p style="color: #007bff; font-weight: bold; margin-top: 10px;">ဖိုင်တင်နေပါသည်... ခေတ္တစောင့်ပါ</p>
+            </div>
+            <div id="uploadSuccessMsg" class="hidden" style="color: #28a745; font-weight: bold; text-align: center; margin: 15px 0;">
+                ✅ အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။
+            </div>
+
             <button class="btn-add" id="uploadExcelBtn">Excel ဖိုင် တင်မည်</button>
         </div>
 
@@ -215,7 +242,6 @@
     </div>
 
     <button id="closeSettingsBtn" class="btn-back">နောက်သို့ ပြန်သွားမည်</button>
-    <button class="logout-btn" id="logoutBtn">အကောင့်ထွက်မည် (Logout)</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -243,13 +269,32 @@
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
-    // UI Elements
     const secLogin = document.getElementById("loginSection"), secSetup = document.getElementById("setupSection");
     const secForm = document.getElementById("formSection"), secAdmin = document.getElementById("adminSection");
     const secSettings = document.getElementById("settingsSection"), secHistory = document.getElementById("historySection");
     const secEmpList = document.getElementById("empListSection");
-    const navTitle = document.getElementById("navTitle"), navSettingsBtn = document.getElementById("navSettingsBtn");
-    const dailyShiftSelect = document.getElementById("dailyShiftSelect");
+    
+    const navTitle = document.getElementById("navTitle");
+    const profileContainer = document.getElementById("profileContainer");
+    const profileIcon = document.getElementById("profileIcon");
+    const profileDropdown = document.getElementById("profileDropdown");
+    const dropName = document.getElementById("dropName");
+    const dropId = document.getElementById("dropId");
+
+    // Dropdown Logic
+    profileIcon.addEventListener("click", (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle("show");
+    });
+    window.addEventListener("click", (e) => {
+        if (!e.target.matches('.profile-icon')) {
+            if (profileDropdown.classList.contains('show')) profileDropdown.classList.remove('show');
+        }
+    });
+
+    document.getElementById("dropLogoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("savedEmpId"); location.reload();
+    });
 
     // ==========================================
     // 1. App Start & Login
@@ -265,8 +310,6 @@
         checkLogin(idInput);
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => { localStorage.removeItem("savedEmpId"); location.reload(); });
-
     function hideAllSections() {
         [secLogin, secSetup, secForm, secAdmin, secSettings, secHistory, secEmpList].forEach(el => el.classList.add("hidden"));
     }
@@ -275,9 +318,13 @@
         if (ADMINS[empId]) {
             isAdmin = true; adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
+            
             navTitle.innerText = "Ferry Time System";
-            navSettingsBtn.style.display = "block";
+            profileContainer.style.display = "block";
+            dropName.innerText = "Admin (" + adminAgency + ")";
+            dropId.innerText = "ID: " + empId;
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
+            
             hideAllSections(); secAdmin.classList.remove("hidden");
             loadDashboardStats();
             return;
@@ -288,8 +335,11 @@
         if (snapshot.exists()) {
             currentEmpId = empId; currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
+            
             navTitle.innerText = "Ferry Time Table";
-            navSettingsBtn.style.display = "block";
+            profileContainer.style.display = "block";
+            dropName.innerText = currentEmpData.name;
+            dropId.innerText = "ID: " + empId;
             
             if (!currentEmpData.dormitory) {
                 hideAllSections(); secSetup.classList.remove("hidden");
@@ -301,7 +351,7 @@
     }
 
     // ==========================================
-    // 2. Navigation & User Updates
+    // 2. Settings Navigation
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
         const dorm = document.getElementById("userDorm").value;
@@ -310,9 +360,10 @@
         currentEmpData.dormitory = dorm; checkTodaySubmission();
     });
 
-    navSettingsBtn.addEventListener("click", () => {
+    document.getElementById("dropSettingsBtn").addEventListener("click", () => {
+        profileDropdown.classList.remove("show");
         hideAllSections(); secSettings.classList.remove("hidden");
-        navTitle.innerText = "Settings Menu";
+        navTitle.innerText = "Settings";
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
             document.getElementById("userSettingsDiv").classList.add("hidden");
@@ -341,11 +392,10 @@
     });
 
     // ==========================================
-    // 3. User Form Actions (Shift & Time)
+    // 3. User Form Actions 
     // ==========================================
     async function checkTodaySubmission() {
         hideAllSections(); secForm.classList.remove("hidden");
-        document.getElementById("empNameDisplay").innerText = currentEmpData.name + " (" + currentEmpId + ")";
         const today = new Date().toLocaleDateString('en-CA');
         const snapshot = await get(ref(db, `submissions/${today}/${currentEmpId}`));
         
@@ -354,13 +404,13 @@
             document.getElementById("successView").classList.remove("hidden");
             document.getElementById("timeSelectionDiv").classList.add("hidden");
             document.getElementById("displaySubTime").innerText = snapshot.val().time;
-            if(snapshot.val().shift) dailyShiftSelect.value = snapshot.val().shift;
+            if(snapshot.val().shift) document.getElementById("dailyShiftSelect").value = snapshot.val().shift;
         } else {
             isEditing = false;
             document.getElementById("successView").classList.add("hidden");
             document.getElementById("timeSelectionDiv").classList.remove("hidden");
             document.getElementById("reasonSection").classList.add("hidden"); 
-            dailyShiftSelect.value = currentEmpData.lastShift || "day";
+            document.getElementById("dailyShiftSelect").value = currentEmpData.lastShift || "day";
             renderTimeOptions();
         }
     }
@@ -373,10 +423,10 @@
         renderTimeOptions();
     });
 
-    dailyShiftSelect.addEventListener("change", renderTimeOptions);
+    document.getElementById("dailyShiftSelect").addEventListener("change", renderTimeOptions);
 
     function renderTimeOptions() {
-        const slots = dailyShiftSelect.value === "day" ? daySlots : nightSlots;
+        const slots = document.getElementById("dailyShiftSelect").value === "day" ? daySlots : nightSlots;
         const container = document.getElementById("timeOptionsContainer");
         container.innerHTML = ""; selectedTime = ""; 
         slots.forEach(slot => {
@@ -406,7 +456,7 @@
         if (isEditing && !reasonVal) return alert("ကျေးဇူးပြု၍ အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်းကို ထည့်သွင်းပေးပါ။");
 
         const today = new Date().toLocaleDateString('en-CA');
-        const selectedShift = dailyShiftSelect.value;
+        const selectedShift = document.getElementById("dailyShiftSelect").value;
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
             time: finalTime, shift: selectedShift, name: currentEmpData.name, dept: currentEmpData.dept || "",
             agency: currentEmpData.agency, dormitory: currentEmpData.dormitory, submittedAt: new Date().toLocaleTimeString(),
@@ -414,14 +464,12 @@
         });
         await update(ref(db, 'employees/' + currentEmpId), { lastShift: selectedShift });
         currentEmpData.lastShift = selectedShift;
-        alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။"); checkTodaySubmission(); 
+        checkTodaySubmission(); 
     });
 
     // ==========================================
-    // 4. Admin Dashboard & New Features
+    // 4. Admin Setup & Excel Upload
     // ==========================================
-    
-    // Add Individual Employee
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
@@ -432,46 +480,78 @@
         document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    // Upload Excel File (.xlsx using SheetJS)
+    // ROBUST EXCEL UPLOAD
     document.getElementById("uploadExcelBtn").addEventListener("click", () => {
         const fileInput = document.getElementById("excelFileInput");
         if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel သို့မဟုတ် CSV ဖိုင် ရွေးချယ်ပါ။");
         
+        const loader = document.getElementById("uploadLoader");
+        const successMsg = document.getElementById("uploadSuccessMsg");
+        const uploadBtn = document.getElementById("uploadExcelBtn");
+        
+        // Show Loading State
+        loader.classList.remove("hidden");
+        successMsg.classList.add("hidden");
+        uploadBtn.disabled = true;
+        uploadBtn.style.opacity = "0.5";
+
         const file = fileInput.files[0];
         const reader = new FileReader();
+        
         reader.onload = async function(e) {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheet = workbook.SheetNames[0];
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                // raw: false ensures IDs like 001 are read as strings
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {raw: false, defval: ""});
                 
                 let successCount = 0;
                 for (let i = 0; i < json.length; i++) {
                     const row = json[i];
-                    // Flexible key mapping for ID, Name, Dept
-                    let idKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'ID' || k.trim().toUpperCase() === 'EMP ID');
-                    let nameKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'NAME');
-                    let deptKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'DEPARTMENT' || k.trim().toUpperCase() === 'DEPT');
+                    
+                    // Normalize keys to uppercase and trim spaces
+                    const normalizedRow = {};
+                    for(let key in row) {
+                        normalizedRow[key.trim().toUpperCase()] = row[key];
+                    }
 
-                    const id = idKey ? String(row[idKey]).trim().toUpperCase() : null;
-                    if (id) {
-                        await set(ref(db, 'employees/' + id), {
-                            name: nameKey ? String(row[nameKey]).trim() : "Unknown",
-                            dept: deptKey ? String(row[deptKey]).trim() : "",
-                            agency: adminAgency // Auto force assigning this admin's agency
+                    // Find matching keys flexibly
+                    let id = normalizedRow['ID'] || normalizedRow['EMP ID'] || normalizedRow['EMPLOYEE ID'] || normalizedRow['EMPID'];
+                    let name = normalizedRow['NAME'] || normalizedRow['EMP NAME'] || normalizedRow['EMPLOYEE NAME'];
+                    let dept = normalizedRow['DEPARTMENT'] || normalizedRow['DEPT'] || normalizedRow['SECTION'];
+
+                    if (id && String(id).trim() !== "") {
+                        let finalId = String(id).trim().toUpperCase();
+                        await set(ref(db, 'employees/' + finalId), {
+                            name: name ? String(name).trim() : "Unknown",
+                            dept: dept ? String(dept).trim() : "",
+                            agency: adminAgency 
                         });
                         successCount++;
                     }
                 }
-                alert(`ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`);
+                
+                // Hide loader, show success message
+                loader.classList.add("hidden");
+                successMsg.innerText = `✅ ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`;
+                successMsg.classList.remove("hidden");
                 fileInput.value = "";
+                
             } catch (err) {
+                loader.classList.add("hidden");
                 alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။ ဇယားခေါင်းစဉ်များ မှန်ကန်မှုရှိမရှိ စစ်ဆေးပါ။");
                 console.error(err);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.style.opacity = "1";
+                // Hide success message after 5 seconds
+                setTimeout(() => { successMsg.classList.add("hidden"); }, 5000);
             }
         };
-        reader.readAsArrayBuffer(file);
+        
+        // Small delay to let UI update before freezing browser with file reading
+        setTimeout(() => { reader.readAsArrayBuffer(file); }, 100);
     });
 
     // Load Dashboard Details
@@ -516,26 +596,23 @@
         });
     }
 
-    // --- New Feature: History View ---
+    // --- History View ---
     document.getElementById("goToHistoryBtn").addEventListener("click", () => {
         hideAllSections(); secHistory.classList.remove("hidden");
         document.getElementById("historyDate").value = new Date().toLocaleDateString('en-CA');
         fetchHistory();
     });
-    
     document.getElementById("fetchHistoryBtn").addEventListener("click", fetchHistory);
-    
     async function fetchHistory() {
         const date = document.getElementById("historyDate").value;
         if(!date) return;
-        document.getElementById("historyContent").innerHTML = "<p style='text-align:center;'>ရှာဖွေနေပါသည်...</p>";
+        document.getElementById("historyContent").innerHTML = "<div class='loader-container'><div class='spinner'></div></div>";
         const snapshot = await get(ref(db, `submissions/${date}`));
         
         if(!snapshot.exists()) {
             document.getElementById("historyContent").innerHTML = "<p style='text-align:center;color:red;'>ရွေးချယ်ထားသော ရက်အတွက် စာရင်းမရှိပါ။</p>";
             return;
         }
-        
         const subs = snapshot.val();
         let html = "", count = 0;
         for(let id in subs) {
@@ -543,19 +620,19 @@
                 count++;
                 html += `<div class="data-card">
                     <strong>${subs[id].name} (${id})</strong><br>
-                    🚗 ပြန်မည့်အချိန်: <span class="highlight">${subs[id].time}</span><br>
+                    🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>
                     🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}<br>
-                    ${subs[id].editReason ? `<span class="alert-text">* ပြင်ဆင်ရသည့်အကြောင်းရင်း: ${subs[id].editReason}</span>` : ""}
+                    ${subs[id].editReason ? `<span style="color: #dc3545; font-size: 13px; display: block; margin-top: 5px;">* ပြင်ဆင်ရသည့်အကြောင်းရင်း: ${subs[id].editReason}</span>` : ""}
                 </div>`;
             }
         }
         document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
     }
 
-    // --- New Feature: Employee List View ---
+    // --- Employee List View ---
     document.getElementById("goToEmpListBtn").addEventListener("click", async () => {
         hideAllSections(); secEmpList.classList.remove("hidden");
-        document.getElementById("empListContent").innerHTML = "<p style='text-align:center;'>ရှာဖွေနေပါသည်...</p>";
+        document.getElementById("empListContent").innerHTML = "<div class='loader-container'><div class='spinner'></div></div>";
         
         const snapshot = await get(ref(db, 'employees'));
         if(!snapshot.exists()) return document.getElementById("empListContent").innerHTML = "<p>ဝန်ထမ်းစာရင်း မရှိသေးပါ။</p>";
@@ -566,7 +643,7 @@
             if(emps[id].agency === adminAgency) {
                 count++;
                 html += `<div class="data-card" style="padding: 10px;">
-                    <strong>${id}</strong> - ${emps[id].name} 
+                    <strong style="color: #007bff;">${id}</strong> - ${emps[id].name} 
                     <div style="font-size:12px; color:#777; margin-top:4px;">${emps[id].dept ? 'ဌာန: '+emps[id].dept : ''}</div>
                 </div>`;
             }
