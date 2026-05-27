@@ -7,28 +7,40 @@
     <style>
         * { box-sizing: border-box; font-family: sans-serif; }
         body { background-color: #f4f6f9; padding: 20px; display: block; margin: 0; }
-        .container { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 500px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="time"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        input[type="text"], input[type="time"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
         button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
         button:hover { background-color: #0056b3; }
         .hidden { display: none; }
+        
+        /* User Form Styles */
         .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .time-btn { padding: 12px; background: #e9ecef; border: 2px solid transparent; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; }
         .time-btn.selected { background: #d4edda; border-color: #28a745; color: #155724; }
         .custom-time-box { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; }
+        .logout-btn { background-color: #6c757d; margin-top: 20px; }
+        
+        /* Admin Dashboard Styles */
+        .admin-section-box { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
+        .btn-add { background-color: #28a745; margin-top: 10px; }
+        .btn-add:hover { background-color: #218838; }
+        .btn-remove { background-color: #dc3545; margin-top: 10px; }
+        .btn-remove:hover { background-color: #c82333; }
+        .admin-title { border-bottom: 2px solid #ddd; padding-bottom: 10px; color: #17a2b8; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    
     <div id="loginSection">
         <h2>ဝန်ထမ်း Login</h2>
         <div class="form-group">
-            <label for="empId">Employee ID ရိုက်ထည့်ပါ</label>
-            <input type="text" id="empId" placeholder="ဥပမာ - EMP001">
+            <label for="empId">ID ရိုက်ထည့်ပါ (Admin အတွက် ADMIN001)</label>
+            <input type="text" id="empId" placeholder="ဥပမာ - EMP001 သို့မဟုတ် ADMIN001">
         </div>
         <button id="loginBtn">စနစ်ထဲသို့ဝင်ရန်</button>
     </div>
@@ -48,12 +60,49 @@
         </div>
 
         <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+        <button id="userLogoutBtn" class="logout-btn">အကောင့်ထွက်မည် (Logout)</button>
     </div>
+
+    <div id="adminSection" class="hidden">
+        <h2 class="admin-title">Admin Management Panel</h2>
+
+        <div class="admin-section-box">
+            <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းအသစ် ထည့်ရန်</h3>
+            <div class="form-group">
+                <label>Employee ID</label>
+                <input type="text" id="newEmpId" placeholder="ဥပမာ - EMP002">
+            </div>
+            <div class="form-group">
+                <label>ဝန်ထမ်းအမည်</label>
+                <input type="text" id="newEmpName" placeholder="ဥပမာ - ကျော်ကျော်">
+            </div>
+            <div class="form-group">
+                <label>အလုပ်ဆိုင်း (Shift)</label>
+                <select id="newEmpShift">
+                    <option value="day">နေ့ဆိုင်း (Day Shift)</option>
+                    <option value="night">ညဆိုင်း (Night Shift)</option>
+                </select>
+            </div>
+            <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
+        </div>
+
+        <div class="admin-section-box">
+            <h3 style="color: #dc3545; margin-top: 0;">🗑️ ဝန်ထမ်းစာရင်းမှ ဖျက်ရန်</h3>
+            <div class="form-group">
+                <label>ဖျက်လိုသော Employee ID ရိုက်ထည့်ပါ</label>
+                <input type="text" id="removeEmpId" placeholder="ဥပမာ - EMP002">
+            </div>
+            <button class="btn-remove" id="removeEmpBtn">ဝန်ထမ်းစာရင်းမှ ပယ်ဖျက်မည်</button>
+        </div>
+
+        <button id="adminLogoutBtn" class="logout-btn" style="width: 100%;">အကောင့်ထွက်မည် (Logout)</button>
+    </div>
+
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // သင့်ရဲ့ Firebase Config အစစ်
     const firebaseConfig = {
@@ -68,6 +117,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Admin အတွက် သတ်မှတ်ထားသော ID
+    const ADMIN_ID = "ADMIN001";
+
     let currentEmpId = "";
     let currentEmpData = null;
     let selectedTime = "";
@@ -75,6 +127,7 @@
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
+    // Auto-login Check
     window.addEventListener('DOMContentLoaded', () => {
         const savedId = localStorage.getItem("savedEmpId");
         if (savedId) {
@@ -88,7 +141,25 @@
         checkLogin(idInput);
     });
 
+    // Logout လုပ်ဆောင်ချက်များ
+    const logout = () => {
+        localStorage.removeItem("savedEmpId");
+        location.reload();
+    };
+    document.getElementById("userLogoutBtn").addEventListener("click", logout);
+    document.getElementById("adminLogoutBtn").addEventListener("click", logout);
+
+    // Login စစ်ဆေးခြင်း (Admin နှင့် User ခွဲခြားခြင်း)
     async function checkLogin(empId) {
+        if (empId === ADMIN_ID) {
+            // Admin ID ဖြင့် ဝင်လာပါက
+            localStorage.setItem("savedEmpId", empId);
+            document.getElementById("loginSection").classList.add("hidden");
+            document.getElementById("adminSection").classList.remove("hidden");
+            return;
+        }
+
+        // ပုံမှန် ဝန်ထမ်း ID ဖြင့် ဝင်လာပါက
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
         
@@ -103,6 +174,7 @@
         }
     }
 
+    // ဝန်ထမ်းစာမျက်နှာ ပြသခြင်း
     function showFormPage() {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("formSection").classList.remove("hidden");
@@ -132,6 +204,7 @@
         });
     }
 
+    // ဝန်ထမ်း - ဖောင် Submit လုပ်ခြင်း
     document.getElementById("submitBtn").addEventListener("click", async () => {
         let finalTime = selectedTime;
         if (!finalTime) return alert("ကျေးဇူးပြု၍ ပြန်မည့်အချိန် ရွေးချယ်ပေးပါဦး။");
@@ -142,7 +215,7 @@
             finalTime = customVal;
         }
 
-        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+        const today = new Date().toLocaleDateString('en-CA');
         const timeNow = new Date().toLocaleTimeString();
 
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
@@ -151,6 +224,45 @@
         });
 
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
+    });
+
+    // Admin - ဝန်ထမ်းအသစ် ထည့်ခြင်း
+    document.getElementById("addEmpBtn").addEventListener("click", async () => {
+        const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
+        const empName = document.getElementById("newEmpName").value.trim();
+        const empShift = document.getElementById("newEmpShift").value;
+
+        if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
+
+        await set(ref(db, 'employees/' + empId), {
+            name: empName,
+            shift: empShift
+        });
+
+        alert("ဝန်ထမ်းအသစ် " + empName + " (" + empId + ") ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။");
+        document.getElementById("newEmpId").value = "";
+        document.getElementById("newEmpName").value = "";
+    });
+
+    // Admin - ဝန်ထမ်း ဖျက်ခြင်း
+    document.getElementById("removeEmpBtn").addEventListener("click", async () => {
+        const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
+
+        if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
+
+        const empRef = ref(db, 'employees/' + empId);
+        const snapshot = await get(empRef);
+
+        if (snapshot.exists()) {
+            const confirmDelete = confirm("ဤဝန်ထမ်းကို စာရင်းမှ အမှန်တကယ် ဖျက်ရန် သေချာပါသလား?");
+            if (confirmDelete) {
+                await remove(empRef);
+                alert(empId + " ကို စာရင်းမှ အောင်မြင်စွာ ပယ်ဖျက်လိုက်ပါပြီ။");
+                document.getElementById("removeEmpId").value = "";
+            }
+        } else {
+            alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။ စာလုံးပေါင်း မှန်ကန်မှု ရှိမရှိ ပြန်စစ်ပါ။");
+        }
     });
 </script>
 </body>
