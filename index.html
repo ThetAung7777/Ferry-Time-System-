@@ -194,7 +194,6 @@
 </div>
 
 <div class="container hidden" id="settingsSection">
-    <h2 class="section-title">Settings</h2>
     
     <div id="userSettingsDiv" class="hidden">
         <div class="admin-section-box">
@@ -218,14 +217,14 @@
     <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
             <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် အစုလိုက် တင်ရန်</h3>
-            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department ခေါင်းစဉ်များသာ လိုအပ်ပါသည်။</p>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department စာတိုင်များသာ လိုအပ်ပါသည်။ (Row အလွတ်များရှိပါက ကျော်သွားပါမည်)</p>
             <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="padding: 10px; background: white;">
             
             <div id="uploadLoader" class="loader-container hidden">
                 <div class="spinner"></div>
-                <p style="color: #007bff; font-weight: bold; margin-top: 10px;">ဖိုင်တင်နေပါသည်... ခေတ္တစောင့်ပါ</p>
+                <p style="color: #007bff; font-weight: bold; margin-top: 10px;">ဖိုင်ဖတ်နေပါသည်... ခေတ္တစောင့်ပါ</p>
             </div>
-            <div id="uploadSuccessMsg" class="hidden" style="color: #28a745; font-weight: bold; text-align: center; margin: 15px 0;">
+            <div id="uploadSuccessMsg" class="hidden" style="color: #28a745; font-weight: bold; text-align: center; margin: 15px 0; background: #d4edda; padding: 10px; border-radius: 8px;">
                 ✅ အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။
             </div>
 
@@ -363,7 +362,8 @@
     document.getElementById("dropSettingsBtn").addEventListener("click", () => {
         profileDropdown.classList.remove("show");
         hideAllSections(); secSettings.classList.remove("hidden");
-        navTitle.innerText = "Settings";
+        // ခေါင်းစဉ်ကို မပြောင်းဘဲ နဂိုအတိုင်းထားမည် (Ferry Time System / Ferry Time Table)
+        
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
             document.getElementById("userSettingsDiv").classList.add("hidden");
@@ -377,8 +377,8 @@
 
     document.getElementById("closeSettingsBtn").addEventListener("click", () => {
         hideAllSections();
-        if (isAdmin) { secAdmin.classList.remove("hidden"); navTitle.innerText = "Ferry Time System"; } 
-        else { checkTodaySubmission(); navTitle.innerText = "Ferry Time Table"; }
+        if (isAdmin) { secAdmin.classList.remove("hidden"); } 
+        else { checkTodaySubmission(); }
     });
     
     document.querySelectorAll(".go-back-dash-btn").forEach(btn => {
@@ -468,7 +468,7 @@
     });
 
     // ==========================================
-    // 4. Admin Setup & Excel Upload
+    // 4. Admin Setup & Advanced Excel Upload
     // ==========================================
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
@@ -480,20 +480,17 @@
         document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    // ROBUST EXCEL UPLOAD
     document.getElementById("uploadExcelBtn").addEventListener("click", () => {
         const fileInput = document.getElementById("excelFileInput");
-        if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel သို့မဟုတ် CSV ဖိုင် ရွေးချယ်ပါ။");
+        if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel ဖိုင် ရွေးချယ်ပါ။");
         
         const loader = document.getElementById("uploadLoader");
         const successMsg = document.getElementById("uploadSuccessMsg");
         const uploadBtn = document.getElementById("uploadExcelBtn");
         
-        // Show Loading State
         loader.classList.remove("hidden");
         successMsg.classList.add("hidden");
-        uploadBtn.disabled = true;
-        uploadBtn.style.opacity = "0.5";
+        uploadBtn.disabled = true; uploadBtn.style.opacity = "0.5";
 
         const file = fileInput.files[0];
         const reader = new FileReader();
@@ -503,36 +500,48 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheet = workbook.SheetNames[0];
-                // raw: false ensures IDs like 001 are read as strings
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {raw: false, defval: ""});
                 
-                let successCount = 0;
-                for (let i = 0; i < json.length; i++) {
-                    const row = json[i];
-                    
-                    // Normalize keys to uppercase and trim spaces
-                    const normalizedRow = {};
-                    for(let key in row) {
-                        normalizedRow[key.trim().toUpperCase()] = row[key];
+                // Read as Array of Arrays to robustly find headers anywhere
+                const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {header: 1, defval: ""});
+                
+                let headerIdx = 0;
+                for (let i = 0; i < Math.min(15, rawData.length); i++) {
+                    const rowText = rawData[i].join("").toUpperCase();
+                    // ရှာဖွေရမည့် ခေါင်းစဉ်စကားလုံးများ ပါဝင်မှု စစ်ဆေးရန် (EMP, NAME)
+                    if (rowText.includes("EMP") && rowText.includes("NAME")) {
+                        headerIdx = i; break;
                     }
+                }
 
-                    // Find matching keys flexibly
-                    let id = normalizedRow['ID'] || normalizedRow['EMP ID'] || normalizedRow['EMPLOYEE ID'] || normalizedRow['EMPID'];
-                    let name = normalizedRow['NAME'] || normalizedRow['EMP NAME'] || normalizedRow['EMPLOYEE NAME'];
-                    let dept = normalizedRow['DEPARTMENT'] || normalizedRow['DEPT'] || normalizedRow['SECTION'];
+                const headers = rawData[headerIdx].map(h => String(h).trim().toUpperCase());
+                let successCount = 0;
 
-                    if (id && String(id).trim() !== "") {
-                        let finalId = String(id).trim().toUpperCase();
-                        await set(ref(db, 'employees/' + finalId), {
-                            name: name ? String(name).trim() : "Unknown",
-                            dept: dept ? String(dept).trim() : "",
+                for (let i = headerIdx + 1; i < rawData.length; i++) {
+                    const rowArray = rawData[i];
+                    if(!rowArray || rowArray.length === 0 || rowArray.join("").trim() === "") continue;
+                    
+                    const row = {};
+                    headers.forEach((h, idx) => { row[h] = rowArray[idx]; });
+
+                    // ခေါင်းစဉ်အမျိုးမျိုးကို လက်ခံနိုင်ရန်
+                    let idKey = headers.find(k => k === 'EMP. NO.' || k === 'EMP.NO.' || k === 'ID' || k === 'EMP ID' || k === 'EMPLOYEE ID');
+                    let nameKey = headers.find(k => k === 'ENGLISH NAME' || k === 'EMP. NAME' || k === 'NAME');
+                    let deptKey = headers.find(k => k === 'DEPT. NAME' || k === 'DEPARTMENT' || k === 'DEPT');
+
+                    let id = idKey ? String(row[idKey]).trim() : null;
+                    let name = nameKey ? String(row[nameKey]).trim() : "Unknown";
+                    let dept = deptKey ? String(row[deptKey]).trim() : "";
+
+                    if (id && id !== "") {
+                        await set(ref(db, 'employees/' + id.toUpperCase()), {
+                            name: name,
+                            dept: dept,
                             agency: adminAgency 
                         });
                         successCount++;
                     }
                 }
                 
-                // Hide loader, show success message
                 loader.classList.add("hidden");
                 successMsg.innerText = `✅ ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`;
                 successMsg.classList.remove("hidden");
@@ -543,14 +552,10 @@
                 alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။ ဇယားခေါင်းစဉ်များ မှန်ကန်မှုရှိမရှိ စစ်ဆေးပါ။");
                 console.error(err);
             } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.style.opacity = "1";
-                // Hide success message after 5 seconds
+                uploadBtn.disabled = false; uploadBtn.style.opacity = "1";
                 setTimeout(() => { successMsg.classList.add("hidden"); }, 5000);
             }
         };
-        
-        // Small delay to let UI update before freezing browser with file reading
         setTimeout(() => { reader.readAsArrayBuffer(file); }, 100);
     });
 
@@ -622,7 +627,7 @@
                     <strong>${subs[id].name} (${id})</strong><br>
                     🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>
                     🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}<br>
-                    ${subs[id].editReason ? `<span style="color: #dc3545; font-size: 13px; display: block; margin-top: 5px;">* ပြင်ဆင်ရသည့်အကြောင်းရင်း: ${subs[id].editReason}</span>` : ""}
+                    ${subs[id].editReason ? `<span style="color: #dc3545; font-size: 13px; display: block; margin-top: 5px;">* ပြင်ဆင်ရ: ${subs[id].editReason}</span>` : ""}
                 </div>`;
             }
         }
