@@ -28,12 +28,19 @@
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Modern Login Form Design */
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 65px); padding: 20px; }
+        .login-card { background: rgba(255, 255, 255, 0.9); padding: 40px 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); text-align: center; }
+        .login-card .avatar-box { width: 70px; height: 70px; background: linear-gradient(45deg, #007bff, #00c6ff); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; margin: 0 auto 20px auto; box-shadow: 0 8px 20px rgba(0,123,255,0.3); }
+        .login-card h3 { margin: 0 0 10px 0; color: #333; font-size: 22px; font-weight: bold; }
+        .login-card p { margin: 0 0 25px 0; color: #777; font-size: 14px; }
+
         .container { max-width: 500px; margin: 30px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
         h2.section-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 20px; font-weight: bold; border-bottom: 2px solid #007bff; display: inline-block; left: 50%; transform: translateX(-50%); position: relative; padding-bottom: 5px; }
         
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 15px; }
-        input[type="text"], input[type="time"], input[type="date"], input[type="file"], select { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
+        input[type="text"], input[type="time"], input[type="date"], input[type="file"], select { width: 100%; padding: 13px 15px; border: 2px solid #e1e5eb; border-radius: 12px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
         input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
         
         /* Buttons */
@@ -60,7 +67,6 @@
         .admin-section-box { margin-bottom: 25px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; }
         .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
         
-        /* Clickable Stat Boxes */
         .stat-box { flex: 1; background: white; padding: 15px; text-align: center; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s; }
         .stat-box:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-color: #007bff; }
         .stat-box h3 { margin: 0 0 5px 0; font-size: 26px; color: #007bff; font-weight: bold; }
@@ -70,7 +76,6 @@
         .breakdown-dorm h4 { color: #d81b60; margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .breakdown-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; padding: 8px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
         
-        /* Loader Spinner */
         .loader-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -83,9 +88,10 @@
 </head>
 <body>
 
-<nav class="navbar">
+<nav class="navbar id="topNavbar" class="hidden">
     <div class="navbar-content">
-        <div style="width: 36px;"></div> <h2 id="navTitle">Login</h2>
+        <div style="width: 36px;"></div> 
+        <h2 id="navTitle">Shuttle System</h2>
         
         <div class="profile-container" id="profileContainer">
             <div class="profile-icon" id="profileIcon">👤</div>
@@ -101,13 +107,16 @@
     </div>
 </nav>
 
-<div class="container" id="loginSection">
-    <h2 class="section-title">ကားစာရင်းပို့ရန် အကောင့်ဝင်မည်</h2>
-    <div class="form-group">
-        <label for="empId">Employee ID ရိုက်ထည့်ပါ</label>
-        <input type="text" id="empId" placeholder="ဥပမာ - 29501564 (သို့) Admin ID">
+<div class="login-wrapper" id="loginSection">
+    <div class="login-card">
+        <div class="avatar-box">🚌</div>
+        <h3>Ferry Time Table</h3>
+        <p>ကျေးဇူးပြု၍ သင်၏ ဝန်ထမ်း ID ဖြင့် ဝင်ရောက်ပါ</p>
+        <div class="form-group" style="text-align: left;">
+            <input type="text" id="empId" placeholder="Employee ID ရိုက်ထည့်ပါ" style="text-align: center; font-weight: bold; letter-spacing: 1px;">
+        </div>
+        <button id="loginBtn" style="margin-top: 5px;">အကောင့်ဝင်မည်</button>
     </div>
-    <button id="loginBtn">ဝင်မည်</button>
 </div>
 
 <div class="container hidden" id="setupSection">
@@ -225,15 +234,17 @@
     <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
             <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် အစုလိုက် တင်ရန်</h3>
-            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department စာတိုင်များသာ လိုအပ်ပါသည်။ (Row အလွတ်များရှိပါက ကျော်သွားပါမည်)</p>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="padding: 10px; background: white;">
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="padding: 10px; background: white;">
             
             <div id="uploadLoader" class="loader-container hidden">
                 <div class="spinner"></div>
                 <p style="color: #007bff; font-weight: bold; margin-top: 10px;">ဖိုင်ဖတ်နေပါသည်... ခေတ္တစောင့်ပါ</p>
             </div>
-            <div id="uploadSuccessMsg" class="hidden" style="color: #28a745; font-weight: bold; text-align: center; margin: 15px 0; background: #d4edda; padding: 10px; border-radius: 8px;">
-                ✅ အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။
+            <div id="uploadSuccessMsg" class="hidden" style="font-weight: bold; text-align: center; margin: 15px 0; background: #d4edda; padding: 10px; border-radius: 8px;"></div>
+            
+            <div id="crossAgencyErrorBox" class="hidden" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 12px; border: 1px solid #f5c6cb; margin-bottom: 15px;">
+                <p id="crossAgencyErrorText" style="font-weight: bold; margin: 0 0 10px 0;"></p>
+                <button id="downloadConflictExcelBtn" class="btn-delete" style="margin-top: 5px;">📥 မှားယွင်းမှုစာရင်း Excel ဒေါင်းမည်</button>
             </div>
 
             <button class="btn-add" id="uploadExcelBtn">Excel ဖိုင် တင်မည်</button>
@@ -247,9 +258,17 @@
             <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
         </div>
         
-        <div class="admin-section-box">
-            <h3 style="color: #dc3545; margin-top: 0; font-size: 18px;">🗑️ ဝန်ထမ်းစာရင်းမှ ဖျက်ရန်</h3>
-            <div class="form-group"><label>ဖျက်လိုသော Employee ID ရိုက်ထည့်ပါ</label><input type="text" id="removeEmpId" placeholder="ဥပမာ - 29501564"></div>
+        <div class="admin-section-box" style="border-color: #f5c6cb;">
+            <h3 style="color: #dc3545; margin-top: 0; font-size: 18px;">🗑️ วန်ထမ်းစာရင်း ပယ်ဖျက်ရန် (Excel သို့မဟုတ် ID)</h3>
+            <div class="form-group" style="background: #fff3f3; padding: 10px; border-radius: 8px; border: 1px solid #fecdd3; margin-bottom: 15px;">
+                <label style="color: #dc3545;">📁 Excel ဖိုင်ဖြင့် အစုလိုက် ဖြုတ်ရန်</label>
+                <input type="file" id="deleteExcelFileInput" accept=".xlsx, .xls" style="padding: 5px; background: white;">
+                <button id="uploadDeleteExcelBtn" class="btn-delete" style="padding: 8px; font-size: 14px;">Excel စာရင်းအတိုင်း အစုလိုက်ဖျက်မည်</button>
+            </div>
+            <div class="form-group">
+                <label>ID တစ်ခုချင်း ဖျက်ရန်</label>
+                <input type="text" id="removeEmpId" placeholder="ဥပမာ - 29501564">
+            </div>
             <button class="btn-delete" id="removeEmpBtn">ဝန်ထမ်းစာရင်းမှ ပယ်ဖျက်မည်</button>
         </div>
     </div>
@@ -286,6 +305,7 @@
     let listSubmittedEmps = [];
     let listRemainingEmps = [];
     let exportDataBuffer = [];
+    let conflictExcelData = []; // Buffer for wrong cross agency data
 
     const secLogin = document.getElementById("loginSection"), secSetup = document.getElementById("setupSection");
     const secForm = document.getElementById("formSection"), secAdmin = document.getElementById("adminSection");
@@ -299,37 +319,21 @@
     const dropName = document.getElementById("dropName");
     const dropId = document.getElementById("dropId");
 
-    // ==========================================
-    // Core Feature: Logical Date (9 AM Cutoff)
-    // ==========================================
     function getLogicalDate() {
         const now = new Date();
-        if (now.getHours() < 9) {
-            now.setDate(now.getDate() - 1); // ၉ နာရီမထိုးခင် ယမန်နေ့အဖြစ်သတ်မှတ်မည်
-        }
+        if (now.getHours() < 9) now.setDate(now.getDate() - 1); 
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
 
-    // Dropdown Logic
-    profileIcon.addEventListener("click", (e) => {
-        e.stopPropagation();
-        profileDropdown.classList.toggle("show");
-    });
-    window.addEventListener("click", (e) => {
-        if (!e.target.matches('.profile-icon')) {
-            if (profileDropdown.classList.contains('show')) profileDropdown.classList.remove('show');
-        }
-    });
-
-    document.getElementById("dropLogoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("savedEmpId"); location.reload();
-    });
+    profileIcon.addEventListener("click", (e) => { e.stopPropagation(); profileDropdown.classList.toggle("show"); });
+    window.addEventListener("click", () => { if (profileDropdown.classList.contains('show')) profileDropdown.classList.remove('show'); });
+    document.getElementById("dropLogoutBtn").addEventListener("click", () => { localStorage.removeItem("savedEmpId"); location.reload(); });
 
     // ==========================================
-    // 1. App Start & Login
+    // 1. Login Logic
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const savedId = localStorage.getItem("savedEmpId");
@@ -342,19 +346,18 @@
         checkLogin(idInput);
     });
 
-    function hideAllSections() {
-        [secLogin, secSetup, secForm, secAdmin, secSettings, secHistory, secDetailList].forEach(el => el.classList.add("hidden"));
-    }
-
     async function checkLogin(empId) {
+        document.getElementById("topNavbar").classList.remove("hidden"); // Show navbar on login success
+        
         if (ADMINS[empId]) {
             isAdmin = true; adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
-            navTitle.innerText = "Ferry Time System";
+            
+            navTitle.innerText = `${adminAgency.split(" ")[0]} Ferry Time Table`; // Dynamic Header
             profileContainer.style.display = "block";
-            dropName.innerText = "Admin (" + adminAgency + ")";
-            dropId.innerText = "ID: " + empId;
+            dropName.innerText = "Admin Panel"; dropId.innerText = "ID: " + empId;
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
+            
             hideAllSections(); secAdmin.classList.remove("hidden");
             loadDashboardStats();
             return;
@@ -365,10 +368,11 @@
         if (snapshot.exists()) {
             currentEmpId = empId; currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
-            navTitle.innerText = "Ferry Time Table";
+            
+            let displayAgencyShort = currentEmpData.agency ? currentEmpData.agency.split(" ")[0] : "Agency";
+            navTitle.innerText = `${displayAgencyShort} Ferry Time Table`; // Dynamic Header for User
             profileContainer.style.display = "block";
-            dropName.innerText = currentEmpData.name;
-            dropId.innerText = "ID: " + empId;
+            dropName.innerText = currentEmpData.name; dropId.innerText = "ID: " + empId;
             
             if (!currentEmpData.dormitory) {
                 hideAllSections(); secSetup.classList.remove("hidden");
@@ -376,11 +380,12 @@
         } else {
             alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။ Admin ကိုဆက်သွယ်ပါ။");
             localStorage.removeItem("savedEmpId");
+            document.getElementById("topNavbar").classList.add("hidden");
         }
     }
 
     // ==========================================
-    // 2. Settings Navigation
+    // 2. Settings & Profile Changes
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
         const dorm = document.getElementById("userDorm").value;
@@ -390,7 +395,6 @@
     });
 
     document.getElementById("dropSettingsBtn").addEventListener("click", () => {
-        profileDropdown.classList.remove("show");
         hideAllSections(); secSettings.classList.remove("hidden");
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
@@ -405,8 +409,7 @@
 
     document.getElementById("closeSettingsBtn").addEventListener("click", () => {
         hideAllSections();
-        if (isAdmin) { secAdmin.classList.remove("hidden"); } 
-        else { checkTodaySubmission(); }
+        if (isAdmin) secAdmin.classList.remove("hidden"); else checkTodaySubmission();
     });
     
     document.querySelectorAll(".go-back-dash-btn").forEach(btn => {
@@ -420,7 +423,7 @@
     });
 
     // ==========================================
-    // 3. User Form Actions 
+    // 3. User Forms
     // ==========================================
     async function checkTodaySubmission() {
         hideAllSections(); secForm.classList.remove("hidden");
@@ -447,8 +450,7 @@
         document.getElementById("successView").classList.add("hidden");
         document.getElementById("timeSelectionDiv").classList.remove("hidden");
         document.getElementById("reasonSection").classList.remove("hidden"); 
-        document.getElementById("editReason").value = ""; 
-        renderTimeOptions();
+        document.getElementById("editReason").value = ""; renderTimeOptions();
     });
 
     document.getElementById("dailyShiftSelect").addEventListener("change", renderTimeOptions);
@@ -491,82 +493,48 @@
             editReason: isEditing ? reasonVal : ""
         });
         await update(ref(db, 'employees/' + currentEmpId), { lastShift: selectedShift });
-        currentEmpData.lastShift = selectedShift;
-        checkTodaySubmission(); 
+        currentEmpData.lastShift = selectedShift; checkTodaySubmission(); 
     });
 
     // ==========================================
-    // 4. Admin Setup & Advanced Excel Upload
+    // 4. Admin Setup & Advanced File Management
     // ==========================================
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
         const empDept = document.getElementById("newEmpDept").value.trim();
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
+        
+        // Individual validation check
+        const checkSnap = await get(ref(db, 'employees/' + empId));
+        if(checkSnap.exists() && checkSnap.val().agency !== adminAgency) {
+            return alert(`❌ ဤဝန်ထမ်းသည် ${checkSnap.val().agency} တွင် စာရင်းရှိပြီးသား ဖြစ်ပါသည်။`);
+        }
+
         await set(ref(db, 'employees/' + empId), { name: empName, dept: empDept, agency: adminAgency });
         alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
         document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    document.getElementById("removeEmpBtn").addEventListener("click", async () => {
-        const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
-        if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
-        const empRef = ref(db, 'employees/' + empId);
-        const snapshot = await get(empRef);
-        if (snapshot.exists()) {
-            if (snapshot.val().agency === adminAgency) {
-                if (confirm(`ID - ${empId} ကို စာရင်းမှ အပြီးအပိုင်ဖျက်ရန် သေချာပါသလား?`)) {
-                    await remove(empRef);
-                    alert(`ID - ${empId} ကို အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။`);
-                    document.getElementById("removeEmpId").value = "";
-                }
-            } else { alert("ဤဝန်ထမ်းသည် သင့် Agency အောက်တွင် မရှိပါ။"); }
-        } else { alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။"); }
-    });
-
-    // --- Daily Refresh Button ---
-    document.getElementById("dailyRefreshBtn").addEventListener("click", async () => {
-        const confirm1 = confirm("ယနေ့အတွက် ကားစာရင်းများကို Excel ဖြင့် ဒေါင်းလုပ်ဆွဲ သိမ်းဆည်းပြီးပါပြီလား?");
-        if (!confirm1) return;
-        
-        const confirm2 = confirm("သတိပြုရန် - ယခုလုပ်ဆောင်ချက်သည် သင့် Agency ၏ ယနေ့စာရင်းအားလုံးကို ဖျက်ပစ်ပြီး အသစ်ပြန်စမည်ဖြစ်ပါသည်။ သေချာပါသလား?");
-        if (confirm2) {
-            const today = getLogicalDate();
-            const snapshot = await get(ref(db, `submissions/${today}`));
-            
-            if (snapshot.exists()) {
-                const subs = snapshot.val();
-                const updates = {};
-                let hasData = false;
-                for (let key in subs) {
-                    if (subs[key].agency === adminAgency) {
-                        updates[key] = null; // delete submission
-                        hasData = true;
-                    }
-                }
-                
-                if (hasData) {
-                    await update(ref(db, `submissions/${today}`), updates);
-                    alert("✅ ယနေ့အတွက် စာရင်းအသစ် ပြန်လည်စတင်ပါပြီ။ ဝန်ထမ်းများ ဖောင်ပြန်ဖြည့်နိုင်ပါပြီ။");
-                } else {
-                    alert("ဖျက်ရန် စာရင်းမရှိပါ။");
-                }
-            } else {
-                alert("ဖျက်ရန် စာရင်းမရှိပါ။");
-            }
-        }
-    });
-
-    document.getElementById("uploadExcelBtn").addEventListener("click", () => {
+    // Excel Upload with Robust Cross-Agency Logic & Conflict Reporting
+    document.getElementById("uploadExcelBtn").addEventListener("click", async () => {
         const fileInput = document.getElementById("excelFileInput");
         if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel ဖိုင် ရွေးချယ်ပါ။");
         
         const loader = document.getElementById("uploadLoader");
         const successMsg = document.getElementById("uploadSuccessMsg");
+        const errorBox = document.getElementById("crossAgencyErrorBox");
+        const errorText = document.getElementById("crossAgencyErrorText");
         const uploadBtn = document.getElementById("uploadExcelBtn");
         
-        loader.classList.remove("hidden"); successMsg.classList.add("hidden");
+        loader.classList.remove("hidden"); successMsg.classList.add("hidden"); errorBox.classList.add("hidden");
         uploadBtn.disabled = true; uploadBtn.style.opacity = "0.5";
+        
+        conflictExcelData = []; // Clear old buffer
+
+        // Pre-fetch all database info once for extremely fast processing
+        const allEmpsSnapshot = await get(ref(db, 'employees'));
+        const existingDatabase = allEmpsSnapshot.exists() ? allEmpsSnapshot.val() : {};
 
         const file = fileInput.files[0];
         const reader = new FileReader();
@@ -588,6 +556,7 @@
 
                 const headers = rawData[headerIdx].map(h => String(h).trim().toUpperCase());
                 let successCount = 0;
+                let conflictCount = 0;
 
                 for (let i = headerIdx + 1; i < rawData.length; i++) {
                     const rowArray = rawData[i];
@@ -597,89 +566,155 @@
                     headers.forEach((h, idx) => { row[h] = rowArray[idx]; });
 
                     let idKey = headers.find(k => k === 'EMP. NO.' || k === 'EMP.NO.' || k === 'ID' || k === 'EMP ID' || k === 'EMPLOYEE ID');
-                    let nameKey = headers.find(k => k.includes('ENGLISH NAME')) || headers.find(k => k.includes('ENGLISH')) || headers.find(k => k === 'EMP. NAME' || k === 'NAME' || k === 'EMP NAME');
+                    let nameKey = headers.find(k => k.includes('ENGLISH NAME')) || headers.find(k => k.includes('ENGLISH')) || headers.find(k === 'EMP. NAME' || k === 'NAME' || k === 'EMP NAME');
                     let deptKey = headers.find(k => k === 'DEPT. NAME' || k === 'DEPARTMENT' || k === 'DEPT');
 
-                    let id = idKey ? String(row[idKey]).trim() : null;
+                    let id = idKey ? String(row[idKey]).trim().toUpperCase() : null;
                     let name = nameKey ? String(row[nameKey]).trim() : "Unknown";
                     let dept = deptKey ? String(row[deptKey]).trim() : "";
 
                     if (id && id !== "") {
-                        await set(ref(db, 'employees/' + id.toUpperCase()), {
-                            name: name, dept: dept, agency: adminAgency 
-                        });
-                        successCount++;
+                        // CROSS AGENCY LOGIC CHECK
+                        if (existingDatabase[id] && existingDatabase[id].agency !== adminAgency) {
+                            conflictCount++;
+                            conflictExcelData.push({
+                                "ID": id,
+                                "Name": name,
+                                "Department": dept,
+                                "Existing Agency": existingDatabase[id].agency,
+                                "Status": "MMD ကထည့်ထားပါသည် (Conflict)"
+                            });
+                        } else {
+                            // Valid insert or updating own agency's record
+                            await set(ref(db, 'employees/' + id), {
+                                name: name, dept: dept, agency: adminAgency 
+                            });
+                            successCount++;
+                        }
                     }
                 }
                 
                 loader.classList.add("hidden");
-                successMsg.innerText = `✅ ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`;
+                successMsg.innerText = `✅ သင့်အေဂျင်စီအတွက် ဝန်ထမ်း ${successCount} ဦး ထည့်သွင်းပြီးပါပြီ။`;
                 successMsg.classList.remove("hidden");
+                
+                if (conflictCount > 0) {
+                    errorText.innerText = `⚠ အခြား Agency (MMD) တွင် ရှိပြီးသားဖြစ်၍ ကျော်သွားသော ဝန်ထမ်း ${conflictCount} ဦး ရှိပါသည်။ အောက်ပါခလုတ်မှ ၎င်းစာရင်းအား Excel ထုတ်ယူနိုင်ပါသည်။`;
+                    errorBox.classList.remove("hidden");
+                }
                 fileInput.value = "";
                 
             } catch (err) {
-                loader.classList.add("hidden");
-                alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။"); console.error(err);
+                loader.classList.add("hidden"); alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။"); console.error(err);
             } finally {
                 uploadBtn.disabled = false; uploadBtn.style.opacity = "1";
-                setTimeout(() => { successMsg.classList.add("hidden"); }, 5000);
             }
         };
         setTimeout(() => { reader.readAsArrayBuffer(file); }, 100);
     });
 
-    // Load Dashboard Details & Prepare Lists
+    // Conflict Excel Downloader Function
+    document.getElementById("downloadConflictExcelBtn").addEventListener("click", () => {
+        if(conflictExcelData.length === 0) return;
+        const ws = XLSX.utils.json_to_sheet(conflictExcelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Conflicts");
+        XLSX.writeFile(wb, `MMD_စာရင်းရှိပြီးသား_မှားယွင်းမှုစာရင်း_${getLogicalDate()}.xlsx`);
+    });
+
+    // Bulk Delete via Excel Mode
+    document.getElementById("uploadDeleteExcelBtn").addEventListener("click", () => {
+        const fileInput = document.getElementById("deleteExcelFileInput");
+        if (fileInput.files.length === 0) return alert("ပယ်ဖျက်ရန် Excel ဖိုင်ကို အရင်ရွေးချယ်ပေးပါ။");
+
+        if (!confirm("အဆိုပါ Excel ဖိုင်ထဲမှ ဝန်ထမ်းများကို စနစ်ထဲမှ အပြီးအပိုင် အစုလိုက် ပယ်ဖျက်ရန် သေချာပါသလား?")) return;
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {raw: false});
+                
+                let deleteCount = 0;
+                for (let i = 0; i < json.length; i++) {
+                    const row = json[i];
+                    const normalizedRow = {};
+                    for(let k in row) normalizedRow[k.trim().toUpperCase()] = row[k];
+
+                    let id = normalizedRow['ID'] || normalizedRow['EMP. NO.'] || normalizedRow['EMP.NO.'] || normalizedRow['EMP ID'];
+                    if (id) {
+                        let finalId = String(id).trim().toUpperCase();
+                        const checkRef = ref(db, 'employees/' + finalId);
+                        const snap = await get(checkRef);
+                        // Security check: Only allow deleting own agency employees
+                        if (snap.exists() && snap.val().agency === adminAgency) {
+                            await remove(checkRef);
+                            deleteCount++;
+                        }
+                    }
+                }
+                alert(`🗑 ဝန်ထမ်း စုစုပေါင်း ${deleteCount} ဦးကို အောင်မြင်စွာ ပယ်ဖျက်ပြီးပါပြီ။`);
+                fileInput.value = "";
+            } catch (err) {
+                alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။"); console.error(err);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    // Single Employee Delete function
+    document.getElementById("dailyRefreshBtn").addEventListener("click", async () => {
+        if (!confirm("ယနေ့အတွက် ကားစာရင်းများကို Excel ထုတ်ယူပြီးပြီလား?")) return;
+        if (confirm("🔄 သင့် Agency ၏ ယနေ့စာရင်းအားလုံးကို ရှင်းလင်းပြီး အသစ်ပြန်စရန် သေချာပါသလား?")) {
+            const today = getLogicalDate();
+            const snapshot = await get(ref(db, `submissions/${today}`));
+            if (snapshot.exists()) {
+                const subs = snapshot.val(); const updates = {}; let hasData = false;
+                for (let key in subs) {
+                    if (subs[key].agency === adminAgency) { updates[key] = null; hasData = true; }
+                }
+                if (hasData) {
+                    await update(ref(db, `submissions/${today}`), updates);
+                    alert("✅ ယနေ့အတွက် စာရင်းအသစ် ပြန်လည်စတင်ပါပြီ။ ဝန်ထမ်းများ ဖောင်ပြန်ဖြည့်နိုင်ပါပြီ။");
+                } else { alert("ဖျက်ရန် စာရင်းမရှိပါ။"); }
+            } else { alert("ဖျက်ရန် စာရင်းမရှိပါ။"); }
+        }
+    });
+
+    // Dashboard Engine
     function loadDashboardStats() {
-        if(!isAdmin) return;
-        const today = getLogicalDate(); // Use logical date
-        
+        if(!isAdmin) return; const today = getLogicalDate();
         onValue(ref(db, 'employees'), (snapshot) => {
-            let totalMap = {};
-            listTotalEmps = [];
-            
+            let totalMap = {}; listTotalEmps = [];
             if (snapshot.exists()) {
                 const emps = snapshot.val();
                 for (let k in emps) {
-                    if (emps[k].agency === adminAgency) {
-                        totalMap[k] = emps[k];
-                        listTotalEmps.push({ id: k, ...emps[k] });
-                    }
+                    if (emps[k].agency === adminAgency) { totalMap[k] = emps[k]; listTotalEmps.push({ id: k, ...emps[k] }); }
                 }
             }
             document.getElementById("countTotal").innerText = listTotalEmps.length;
             
             onValue(ref(db, `submissions/${today}`), (subSnapshot) => {
-                let breakdown = {}; 
-                let subMap = {};
-                listSubmittedEmps = [];
-                
+                let breakdown = {}; let subMap = {}; listSubmittedEmps = [];
                 if (subSnapshot.exists()) {
                     const subs = subSnapshot.val();
                     for (let k in subs) {
                         if (subs[k].agency === adminAgency) {
-                            subMap[k] = subs[k];
-                            listSubmittedEmps.push({ id: k, ...subs[k] });
-                            
+                            subMap[k] = subs[k]; listSubmittedEmps.push({ id: k, ...subs[k] });
                             let dorm = subs[k].dormitory || "မသိရသော အဆောင်";
                             let t = subs[k].time || "မသိရသော အချိန်";
-                            if (!breakdown[dorm]) breakdown[dorm] = {};
-                            if (!breakdown[dorm][t]) breakdown[dorm][t] = 0;
-                            breakdown[dorm][t]++;
+                            if (!breakdown[dorm]) breakdown[dorm] = {}; if (!breakdown[dorm][t]) breakdown[dorm][t] = 0; breakdown[dorm][t]++;
                         }
                     }
                 }
                 document.getElementById("countSubmitted").innerText = listSubmittedEmps.length;
-                
-                // Calculate Remaining
                 listRemainingEmps = [];
-                for (let k in totalMap) {
-                    if (!subMap[k]) {
-                        listRemainingEmps.push({ id: k, ...totalMap[k] });
-                    }
-                }
+                for (let k in totalMap) { if (!subMap[k]) listRemainingEmps.push({ id: k, ...totalMap[k] }); }
                 document.getElementById("countRemaining").innerText = listRemainingEmps.length;
 
-                // Render Breakdown HTML
                 let bdHtml = "";
                 for (let dorm in breakdown) {
                     bdHtml += `<div class="breakdown-dorm"><h4>🏢 ${dorm}</h4>`;
@@ -691,110 +726,67 @@
         });
     }
 
-    // ==========================================
-    // 5. Stat Box Click & Detail List Display
-    // ==========================================
+    // Displays lists
     document.getElementById("statTotal").addEventListener("click", () => showDetailList('total'));
     document.getElementById("statSubmitted").addEventListener("click", () => showDetailList('submitted'));
     document.getElementById("statRemaining").addEventListener("click", () => showDetailList('remaining'));
     document.getElementById("goToEmpListBtn").addEventListener("click", () => showDetailList('total'));
 
     function showDetailList(type) {
-        hideAllSections(); 
-        secDetailList.classList.remove("hidden");
+        hideAllSections(); secDetailList.classList.remove("hidden");
         const titleEl = document.getElementById("detailListTitle");
         const contentDiv = document.getElementById("detailListContent");
-        let html = "";
-        exportDataBuffer = [];
+        let html = ""; exportDataBuffer = [];
 
         if (type === 'submitted') {
             titleEl.innerText = "ယနေ့ ဖြည့်ပြီးသူများ စာရင်း";
-            exportDataBuffer = listSubmittedEmps.map(e => ({
-                "ID": e.id, "Name": e.name, "Department": e.dept, "Time": e.time, "Shift": e.shift, "Dormitory": e.dormitory, "Edit Reason": e.editReason || "-"
-            }));
+            exportDataBuffer = listSubmittedEmps.map(e => ({ "ID": e.id, "Name": e.name, "Department": e.dept, "Time": e.time, "Shift": e.shift, "Dormitory": e.dormitory, "Edit Reason": e.editReason || "-" }));
             listSubmittedEmps.forEach(e => {
-                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #28a745;">
-                    <strong style="color: #28a745;">${e.id}</strong> - ${e.name}
-                    <div style="font-size:13px; color:#555; margin-top:4px;">
-                        ကားအချိန်: <b>${e.time}</b> | ဆိုင်း: ${e.shift==='day'?'နေ့':'ည'}<br>
-                        အဆောင်: ${e.dormitory || '-'} <br>
-                        ${e.dept ? `ဌာန: ${e.dept}` : ''}
-                    </div>
-                </div>`;
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #28a745;"><strong>${e.id}</strong> - ${e.name}<div style="font-size:13px; color:#555; margin-top:4px;">ကားအချိန်: <b>${e.time}</b> | ဆိုင်း: ${e.shift==='day'?'နေ့':'ည'}<br>အဆောင်: ${e.dormitory || '-'}</div></div>`;
             });
             contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#28a745;'>စုစုပေါင်း: ${listSubmittedEmps.length} ဦး</p>` + html;
-        } 
-        else if (type === 'remaining') {
+        } else if (type === 'remaining') {
             titleEl.innerText = "ယနေ့ မဖြည့်ရသေးသူများ စာရင်း";
-            exportDataBuffer = listRemainingEmps.map(e => ({
-                "ID": e.id, "Name": e.name, "Department": e.dept
-            }));
+            exportDataBuffer = listRemainingEmps.map(e => ({ "ID": e.id, "Name": e.name, "Department": e.dept }));
             listRemainingEmps.forEach(e => {
-                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #dc3545;">
-                    <strong style="color: #dc3545;">${e.id}</strong> - ${e.name}
-                    <div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div>
-                </div>`;
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #dc3545;"><strong>${e.id}</strong> - ${e.name}<div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div></div>`;
             });
             contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#dc3545;'>စုစုပေါင်း: ${listRemainingEmps.length} ဦး</p>` + html;
-        } 
-        else {
+        } else {
             titleEl.innerText = "စုစုပေါင်း ဝန်ထမ်းစာရင်း";
-            exportDataBuffer = listTotalEmps.map(e => ({
-                "ID": e.id, "Name": e.name, "Department": e.dept
-            }));
+            exportDataBuffer = listTotalEmps.map(e => ({ "ID": e.id, "Name": e.name, "Department": e.dept }));
             listTotalEmps.forEach(e => {
-                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #007bff;">
-                    <strong style="color: #007bff;">${e.id}</strong> - ${e.name}
-                    <div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div>
-                </div>`;
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #007bff;"><strong>${e.id}</strong> - ${e.name}<div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div></div>`;
             });
             contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${listTotalEmps.length} ဦး</p>` + html;
         }
     }
 
-    // Export to Excel function
     document.getElementById("exportExcelBtn").addEventListener("click", () => {
-        if(exportDataBuffer.length === 0) return alert("ဒေါင်းလုပ်ဆွဲရန် ဒေတာ မရှိပါ။");
-        const ws = XLSX.utils.json_to_sheet(exportDataBuffer);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "List");
-        const fileName = `${document.getElementById("detailListTitle").innerText}_${getLogicalDate()}.xlsx`;
-        XLSX.writeFile(wb, fileName);
+        if(exportDataBuffer.length === 0) return;
+        const ws = XLSX.utils.json_to_sheet(exportDataBuffer); const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "List"); XLSX.writeFile(wb, `${document.getElementById("detailListTitle").innerText}_${getLogicalDate()}.xlsx`);
     });
 
     // --- History View ---
     document.getElementById("goToHistoryBtn").addEventListener("click", () => {
-        hideAllSections(); secHistory.classList.remove("hidden");
-        document.getElementById("historyDate").value = getLogicalDate();
-        fetchHistory();
+        hideAllSections(); secHistory.classList.remove("hidden"); document.getElementById("historyDate").value = getLogicalDate(); fetchHistory();
     });
     document.getElementById("fetchHistoryBtn").addEventListener("click", fetchHistory);
     async function fetchHistory() {
-        const date = document.getElementById("historyDate").value;
-        if(!date) return;
+        const date = document.getElementById("historyDate").value; if(!date) return;
         document.getElementById("historyContent").innerHTML = "<div class='loader-container'><div class='spinner'></div></div>";
         const snapshot = await get(ref(db, `submissions/${date}`));
-        
-        if(!snapshot.exists()) {
-            document.getElementById("historyContent").innerHTML = "<p style='text-align:center;color:red;'>ရွေးချယ်ထားသော ရက်အတွက် စာရင်းမရှိပါ။</p>";
-            return;
-        }
-        const subs = snapshot.val();
-        let html = "", count = 0;
+        if(!snapshot.exists()) { document.getElementById("historyContent").innerHTML = "<p style='text-align:center;color:red;'>ရွေးချယ်ထားသော ရက်အတွက် စာရင်းမရှိပါ။</p>"; return; }
+        const subs = snapshot.val(); let html = "", count = 0;
         for(let id in subs) {
             if(subs[id].agency === adminAgency) {
                 count++;
-                html += `<div class="data-card">
-                    <strong>${subs[id].name} (${id})</strong><br>
-                    🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>
-                    🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}<br>
-                    ${subs[id].editReason ? `<span style="color: #dc3545; font-size: 13px; display: block; margin-top: 5px;">* ပြင်ဆင်ရ: ${subs[id].editReason}</span>` : ""}
-                </div>`;
+                html += `<div class="data-card"><strong>${subs[id].name} (${id})</strong><br>🚗 ပြันမည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}</div>`;
             }
         }
         document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
     }
-
 </script>
 </body>
 </html>
