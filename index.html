@@ -9,12 +9,12 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 0; margin: 0; min-height: 100vh; }
         
-        /* Navbar */
-        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; padding: 15px 20px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
-        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px; }
+        /* Navbar Fixed & Centered */
+        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; padding: 0 20px; display: flex; align-items: center; justify-content: center; height: 60px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px; text-align: center; width: 100%; }
         
         /* Small Settings Btn on top right */
-        .settings-btn { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; display: none; position: absolute; right: 15px; top: 12px; padding: 5px 8px; border-radius: 50%; transition: background 0.3s; }
+        .settings-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; padding: 6px 10px; border-radius: 50%; transition: background 0.3s; display: none; }
         .settings-btn:hover { background: rgba(255,255,255,0.4); }
         
         .container { max-width: 500px; margin: 30px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
@@ -61,6 +61,7 @@
         
         .setup-alert { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; text-align: center; border: 1px solid #ffeeba; }
         .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 3px 10px; border-radius: 12px; font-size: 13px; vertical-align: middle; margin-left: 10px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .readonly-text { padding: 12px 15px; background: #e9ecef; border-radius: 10px; font-weight: bold; color: #495057; border: 1px solid #ced4da; }
     </style>
 </head>
 <body>
@@ -81,16 +82,8 @@
 
 <div class="container hidden" id="setupSection">
     <h2 class="section-title">အချက်အလက် ဖြည့်သွင်းရန်</h2>
-    <div class="setup-alert">သင်၏ Agency နှင့် အဆောင်အမည်ကို ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။</div>
+    <div class="setup-alert">သင် နေထိုင်သည့် အဆောင်အမည်ကို ပထမဆုံးအကြိမ် ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။</div>
     
-    <div class="form-group">
-        <label>Agency ရွေးချယ်ပါ</label>
-        <select id="userAgency">
-            <option value="">-- ရွေးချယ်ပါ --</option>
-            <option value="SPT Agency">SPT Agency</option>
-            <option value="MMD Agency">MMD Agency</option>
-        </select>
-    </div>
     <div class="form-group">
         <label>နေထိုင်သည့် အဆောင် (Dormitory) ရွေးချယ်ပါ</label>
         <select id="userDorm">
@@ -114,6 +107,15 @@
     </div>
 
     <div id="timeSelectionDiv">
+        
+        <div class="form-group">
+            <label style="color: #007bff;">ယနေ့ အလုပ်ဆိုင်း (Shift) ကို ရွေးချယ်ပါ</label>
+            <select id="dailyShiftSelect">
+                <option value="day">နေ့ဆိုင်း (Day Shift)</option>
+                <option value="night">ညဆိုင်း (Night Shift)</option>
+            </select>
+        </div>
+
         <div class="form-group">
             <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
             <div id="timeOptionsContainer" class="time-options"></div>
@@ -154,17 +156,14 @@
 </div>
 
 <div class="container hidden" id="settingsSection">
-    <h2 class="section-title">Settings & Menu</h2>
+    <h2 class="section-title">Settings Menu</h2>
     
     <div id="userSettingsDiv" class="hidden">
         <div class="admin-section-box">
             <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">အချက်အလက်များ ပြင်ဆင်ရန်</h3>
             <div class="form-group">
                 <label>Agency</label>
-                <select id="editUserAgency">
-                    <option value="SPT Agency">SPT Agency</option>
-                    <option value="MMD Agency">MMD Agency</option>
-                </select>
+                <div class="readonly-text" id="displayUserAgency">Agency Name</div>
             </div>
             <div class="form-group">
                 <label>နေထိုင်သည့် အဆောင်</label>
@@ -181,6 +180,7 @@
     <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
             <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department စာတိုင်များသာ လိုအပ်ပါသည်။ (Shift မလိုအပ်ပါ)</p>
             <input type="file" id="csvFileInput" accept=".csv" style="padding: 10px; background: white;">
             <button class="btn-add" id="uploadCsvBtn">CSV ဖိုင် တင်မည်</button>
         </div>
@@ -190,13 +190,6 @@
             <div class="form-group"><label>Employee ID</label><input type="text" id="newEmpId"></div>
             <div class="form-group"><label>ဝန်ထမ်းအမည်</label><input type="text" id="newEmpName"></div>
             <div class="form-group"><label>ဌာန (Department)</label><input type="text" id="newEmpDept"></div>
-            <div class="form-group">
-                <label>အလုပ်ဆိုင်း (Shift)</label>
-                <select id="newEmpShift">
-                    <option value="day">နေ့ဆိုင်း (Day Shift)</option>
-                    <option value="night">ညဆိုင်း (Night Shift)</option>
-                </select>
-            </div>
             <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
         </div>
     </div>
@@ -248,6 +241,7 @@
     
     const navTitle = document.getElementById("navTitle");
     const navSettingsBtn = document.getElementById("navSettingsBtn");
+    const dailyShiftSelect = document.getElementById("dailyShiftSelect");
 
     // ==========================================
     // 1. App Start & Login
@@ -277,12 +271,10 @@
     }
 
     async function checkLogin(empId) {
-        // Check if Admin
         if (ADMINS[empId]) {
             isAdmin = true;
             adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
-            // Beautiful Header after login
             navTitle.innerText = "Ferry Time System";
             navSettingsBtn.style.display = "block";
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
@@ -292,7 +284,6 @@
             return;
         }
 
-        // Check if User
         isAdmin = false;
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
@@ -301,23 +292,18 @@
             currentEmpId = empId;
             currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
-            // Beautiful Header after login
             navTitle.innerText = "Ferry Time Table";
             navSettingsBtn.style.display = "block";
             
-            // Check First-Time Setup
-            if (!currentEmpData.agency || !currentEmpData.dormitory) {
-                if (currentEmpData.agency) {
-                    document.getElementById("userAgency").value = currentEmpData.agency;
-                    document.getElementById("userAgency").disabled = true;
-                }
+            // First time setup - check only dormitory since agency is fixed by admin
+            if (!currentEmpData.dormitory) {
                 hideAllSections();
                 secSetup.classList.remove("hidden");
             } else {
                 checkTodaySubmission();
             }
         } else {
-            alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။");
+            alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။ Admin ကိုဆက်သွယ်ပါ။");
             localStorage.removeItem("savedEmpId");
         }
     }
@@ -326,12 +312,10 @@
     // 2. Setup & Settings Navigation
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
-        const agency = currentEmpData.agency || document.getElementById("userAgency").value;
         const dorm = document.getElementById("userDorm").value;
-        if (!agency || !dorm) return alert("Agency နှင့် အဆောင်ကို ရွေးချယ်ပေးပါ။");
+        if (!dorm) return alert("နေထိုင်သည့် အဆောင်ကို ရွေးချယ်ပေးပါ။");
 
-        await update(ref(db, 'employees/' + currentEmpId), { agency: agency, dormitory: dorm });
-        currentEmpData.agency = agency;
+        await update(ref(db, 'employees/' + currentEmpId), { dormitory: dorm });
         currentEmpData.dormitory = dorm;
         checkTodaySubmission();
     });
@@ -347,7 +331,8 @@
         } else {
             document.getElementById("userSettingsDiv").classList.remove("hidden");
             document.getElementById("adminSettingsDiv").classList.add("hidden");
-            document.getElementById("editUserAgency").value = currentEmpData.agency || "SPT Agency";
+            // Show agency text, do not allow edit
+            document.getElementById("displayUserAgency").innerText = currentEmpData.agency || "မသတ်မှတ်ရသေးပါ";
             document.getElementById("editUserDorm").value = currentEmpData.dormitory || "ဘွန်နခွန် BN တိုက်";
         }
     });
@@ -364,16 +349,14 @@
     });
 
     document.getElementById("updateProfileBtn").addEventListener("click", async () => {
-        const agency = document.getElementById("editUserAgency").value;
         const dorm = document.getElementById("editUserDorm").value;
-        await update(ref(db, 'employees/' + currentEmpId), { agency: agency, dormitory: dorm });
-        currentEmpData.agency = agency;
+        await update(ref(db, 'employees/' + currentEmpId), { dormitory: dorm });
         currentEmpData.dormitory = dorm;
-        alert("အချက်အလက်များ ပြင်ဆင်ပြီးပါပြီ။");
+        alert("အဆောင်ပြောင်းလဲမှုကို သိမ်းဆည်းပြီးပါပြီ။");
     });
 
     // ==========================================
-    // 3. User Form Actions
+    // 3. User Form Actions (Shift & Time)
     // ==========================================
     async function checkTodaySubmission() {
         hideAllSections();
@@ -389,11 +372,19 @@
             document.getElementById("successView").classList.remove("hidden");
             document.getElementById("timeSelectionDiv").classList.add("hidden");
             document.getElementById("displaySubTime").innerText = snapshot.val().time;
+            
+            // Set dropdown to saved shift
+            if(snapshot.val().shift) {
+                dailyShiftSelect.value = snapshot.val().shift;
+            }
         } else {
             isEditing = false;
             document.getElementById("successView").classList.add("hidden");
             document.getElementById("timeSelectionDiv").classList.remove("hidden");
             document.getElementById("reasonSection").classList.add("hidden"); 
+            
+            // Default to previously used shift or 'day'
+            dailyShiftSelect.value = currentEmpData.lastShift || "day";
             renderTimeOptions();
         }
     }
@@ -402,12 +393,17 @@
         document.getElementById("successView").classList.add("hidden");
         document.getElementById("timeSelectionDiv").classList.remove("hidden");
         document.getElementById("reasonSection").classList.remove("hidden"); 
-        document.getElementById("editReason").value = ""; // Clear old reason
+        document.getElementById("editReason").value = ""; 
+        renderTimeOptions();
+    });
+
+    dailyShiftSelect.addEventListener("change", () => {
         renderTimeOptions();
     });
 
     function renderTimeOptions() {
-        const slots = currentEmpData.shift === "day" ? daySlots : nightSlots;
+        const currentShift = dailyShiftSelect.value;
+        const slots = currentShift === "day" ? daySlots : nightSlots;
         const container = document.getElementById("timeOptionsContainer");
         container.innerHTML = "";
         selectedTime = ""; 
@@ -448,9 +444,12 @@
 
         const today = new Date().toLocaleDateString('en-CA');
         const timeNow = new Date().toLocaleTimeString();
+        const selectedShift = dailyShiftSelect.value;
 
+        // Save submission
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
             time: finalTime,
+            shift: selectedShift,
             name: currentEmpData.name,
             dept: currentEmpData.dept || "",
             agency: currentEmpData.agency,
@@ -458,6 +457,10 @@
             submittedAt: timeNow,
             editReason: isEditing ? reasonVal : ""
         });
+        
+        // Update user's last shift preference
+        await update(ref(db, 'employees/' + currentEmpId), { lastShift: selectedShift });
+        currentEmpData.lastShift = selectedShift;
         
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
         checkTodaySubmission(); 
@@ -470,12 +473,12 @@
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
         const empDept = document.getElementById("newEmpDept").value.trim();
-        const empShift = document.getElementById("newEmpShift").value;
+        // Shift is now handled by the user
 
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
 
         await set(ref(db, 'employees/' + empId), { 
-            name: empName, dept: empDept, shift: empShift, agency: adminAgency 
+            name: empName, dept: empDept, agency: adminAgency 
         });
         alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
         document.getElementById("newEmpId").value = "";
@@ -498,9 +501,8 @@
                     if (id) {
                         await set(ref(db, 'employees/' + id), {
                             name: row["Name"] ? row["Name"].trim() : "Unknown",
-                            shift: row["Shift"] ? row["Shift"].trim().toLowerCase() : "day",
                             dept: row["Department"] ? row["Department"].trim() : "",
-                            agency: adminAgency 
+                            agency: adminAgency // Auto force assigning this admin's agency
                         });
                         successCount++;
                     }
