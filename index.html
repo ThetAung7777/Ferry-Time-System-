@@ -9,66 +9,70 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 0; margin: 0; min-height: 100vh; }
         
-        /* Navbar Fixed & Centered */
-        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; padding: 0 20px; display: flex; align-items: center; justify-content: center; height: 60px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
-        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px; text-align: center; width: 100%; }
-        
-        /* Small Settings Btn on top right */
-        .settings-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; padding: 6px 10px; border-radius: 50%; transition: background 0.3s; display: none; }
-        .settings-btn:hover { background: rgba(255,255,255,0.4); }
+        /* Navbar - Fixed the Settings button overlap */
+        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; height: 60px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .navbar-content { width: 100%; max-width: 600px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .settings-btn { background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; display: none; padding: 0; transition: transform 0.2s; }
+        .settings-btn:hover { transform: scale(1.1); }
         
         .container { max-width: 500px; margin: 30px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
         h2.section-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 22px; font-weight: bold; border-bottom: 2px solid #007bff; display: inline-block; left: 50%; transform: translateX(-50%); position: relative; padding-bottom: 5px; }
         
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 15px; }
-        input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
-        input[type="text"]:focus, input[type="time"]:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+        input[type="text"], input[type="time"], input[type="date"], input[type="file"], select { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
+        input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
         
-        /* Beautiful Gradient Buttons */
+        /* Buttons */
         button { width: 100%; padding: 13px; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: transform 0.1s, box-shadow 0.2s; background: linear-gradient(45deg, #007bff, #00c6ff); box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
         button:hover { box-shadow: 0 6px 15px rgba(0,123,255,0.4); }
-        button:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(0,123,255,0.3); }
+        button:active { transform: scale(0.98); }
+        .btn-add { background: linear-gradient(45deg, #28a745, #8bc34a); box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .btn-action { background: linear-gradient(45deg, #6f42c1, #a370f7); margin-bottom: 10px; margin-top: 0; }
+        .btn-back { background: linear-gradient(45deg, #6c757d, #adb5bd); }
+        .logout-btn { background: linear-gradient(45deg, #dc3545, #ff6b6b); margin-top: 30px; }
         .hidden { display: none !important; }
         
-        /* User Form Styles */
+        /* Time Options */
         .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .time-btn { padding: 15px; background: #f0f2f5; border: 2px solid transparent; border-radius: 12px; text-align: center; cursor: pointer; font-weight: bold; transition: all 0.2s; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .time-btn:hover { background: #e1e5eb; }
+        .time-btn { padding: 15px; background: #f0f2f5; border: 2px solid transparent; border-radius: 12px; text-align: center; cursor: pointer; font-weight: bold; transition: all 0.2s; color: #333; }
         .time-btn.selected { background: linear-gradient(45deg, #28a745, #8bc34a); color: white; border-color: #28a745; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
-        .custom-time-box { margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #eee; }
         
         /* Success View */
-        .success-box { background: linear-gradient(135deg, #d4edda 0%, #a3cfbb 100%); color: #155724; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .btn-edit { background: linear-gradient(45deg, #ffc107, #ff9800); color: #212529; box-shadow: 0 4px 10px rgba(255,193,7,0.3); }
-        .btn-edit:hover { box-shadow: 0 6px 15px rgba(255,193,7,0.4); }
+        .success-box { background: linear-gradient(135deg, #d4edda 0%, #a3cfbb 100%); color: #155724; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; }
+        .btn-edit { background: linear-gradient(45deg, #ffc107, #ff9800); color: #212529; }
         
         /* Admin Dashboard Styles */
-        .admin-section-box { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
-        .btn-add { background: linear-gradient(45deg, #28a745, #8bc34a); box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
-        .logout-btn { background: linear-gradient(45deg, #dc3545, #ff6b6b); margin-top: 30px; box-shadow: 0 4px 10px rgba(220,53,69,0.3); }
+        .admin-section-box { margin-bottom: 25px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; }
+        .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: white; padding: 15px; text-align: center; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 26px; color: #007bff; font-weight: bold; }
+        .stat-box p { margin: 0; font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
         
-        /* Dashboard Stats */
-        .stats-container { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
-        .stat-box { flex: 1; background: white; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .stat-box h3 { margin: 0 0 5px 0; font-size: 28px; color: #007bff; font-weight: bold; }
-        .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .breakdown-dorm { margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
+        .breakdown-dorm h4 { color: #d81b60; margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .breakdown-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px; padding: 8px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
         
-        /* Breakdown styles */
-        .breakdown-dorm { margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .breakdown-dorm h4 { color: #d81b60; margin: 0 0 10px 0; font-size: 17px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .breakdown-row { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 7px; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
+        /* Data Lists (History & Employees) */
+        .data-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .data-card strong { color: #007bff; font-size: 16px; }
+        .data-card span.highlight { color: #28a745; font-weight: bold; }
+        .data-card span.alert-text { color: #dc3545; font-size: 13px; display: block; margin-top: 5px; }
         
-        .setup-alert { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; text-align: center; border: 1px solid #ffeeba; }
-        .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 3px 10px; border-radius: 12px; font-size: 13px; vertical-align: middle; margin-left: 10px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .setup-alert { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; text-align: center; }
+        .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 3px 10px; border-radius: 12px; font-size: 13px; vertical-align: middle; margin-left: 10px; font-weight: bold; }
         .readonly-text { padding: 12px 15px; background: #e9ecef; border-radius: 10px; font-weight: bold; color: #495057; border: 1px solid #ced4da; }
     </style>
 </head>
 <body>
 
 <nav class="navbar">
-    <h2 id="navTitle">Login</h2>
-    <button class="settings-btn" id="navSettingsBtn">⚙️</button>
+    <div class="navbar-content">
+        <div style="width: 24px;"></div> 
+        <h2 id="navTitle">Login</h2>
+        <button class="settings-btn" id="navSettingsBtn">⚙️</button>
+    </div>
 </nav>
 
 <div class="container" id="loginSection">
@@ -83,7 +87,6 @@
 <div class="container hidden" id="setupSection">
     <h2 class="section-title">အချက်အလက် ဖြည့်သွင်းရန်</h2>
     <div class="setup-alert">သင် နေထိုင်သည့် အဆောင်အမည်ကို ပထမဆုံးအကြိမ် ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။</div>
-    
     <div class="form-group">
         <label>နေထိုင်သည့် အဆောင် (Dormitory) ရွေးချယ်ပါ</label>
         <select id="userDorm">
@@ -93,7 +96,7 @@
             <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
         </select>
     </div>
-    <button id="saveSetupBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">မှတ်သားပြီး ရှေ့ဆက်မည်</button>
+    <button id="saveSetupBtn" class="btn-add">မှတ်သားပြီး ရှေ့ဆက်မည်</button>
 </div>
 
 <div class="container hidden" id="formSection">
@@ -107,7 +110,6 @@
     </div>
 
     <div id="timeSelectionDiv">
-        
         <div class="form-group">
             <label style="color: #007bff;">ယနေ့ အလုပ်ဆိုင်း (Shift) ကို ရွေးချယ်ပါ</label>
             <select id="dailyShiftSelect">
@@ -115,28 +117,28 @@
                 <option value="night">ညဆိုင်း (Night Shift)</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
             <div id="timeOptionsContainer" class="time-options"></div>
         </div>
-
         <div id="customTimeSection" class="form-group hidden custom-time-box">
             <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
             <input type="time" id="customTime">
         </div>
-
         <div id="reasonSection" class="form-group hidden" style="background: #fff3cd; padding: 15px; border-radius: 10px; border: 1px solid #ffeeba;">
             <label style="color: #dc3545; font-size: 14px;">* အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်း (မဖြစ်မနေထည့်ပါ)</label>
             <input type="text" id="editReason" placeholder="ဥပမာ - OT ဆင်းရသဖြင့်">
         </div>
-
-        <button id="submitBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">Submit တင်မည်</button>
+        <button id="submitBtn" class="btn-add">Submit တင်မည်</button>
     </div>
 </div>
 
 <div class="container hidden" id="adminSection" style="max-width: 650px;">
-    <h2 class="section-title" style="border-bottom-color: #ffeb3b;">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
+    <h2 class="section-title">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
+    
+    <button id="goToHistoryBtn" class="btn-action">📅 နေ့စဉ် ကားစာရင်း (History)</button>
+    <button id="goToEmpListBtn" class="btn-action">👥 ဝန်ထမ်းစာရင်း ကြည့်ရန်</button>
+    <div style="height: 15px;"></div>
 
     <div class="admin-section-box">
         <h3 style="color: #007bff; margin-top: 0; font-size: 18px; text-align: center;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
@@ -153,6 +155,24 @@
             <p style="text-align: center; color: #777;">စာရင်း တွက်ချက်နေပါသည်...</p>
         </div>
     </div>
+</div>
+
+<div class="container hidden" id="historySection" style="max-width: 650px;">
+    <h2 class="section-title">ကားစာရင်း မှတ်တမ်း</h2>
+    <div class="form-group">
+        <label>ရက်စွဲ ရွေးချယ်ပါ</label>
+        <input type="date" id="historyDate">
+    </div>
+    <button id="fetchHistoryBtn" class="btn-add" style="margin-bottom: 20px;">ရှာဖွေမည်</button>
+    
+    <div id="historyContent"></div>
+    <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
+</div>
+
+<div class="container hidden" id="empListSection" style="max-width: 650px;">
+    <h2 class="section-title">ဝန်ထမ်းစာရင်း</h2>
+    <div id="empListContent" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
+    <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
 </div>
 
 <div class="container hidden" id="settingsSection">
@@ -173,16 +193,16 @@
                     <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
                 </select>
             </div>
-            <button id="updateProfileBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">ပြောင်းလဲမှုကို သိမ်းမည်</button>
+            <button id="updateProfileBtn" class="btn-add">ပြောင်းလဲမှုကို သိမ်းမည်</button>
         </div>
     </div>
 
     <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
-            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
-            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department စာတိုင်များသာ လိုအပ်ပါသည်။ (Shift မလိုအပ်ပါ)</p>
-            <input type="file" id="csvFileInput" accept=".csv" style="padding: 10px; background: white;">
-            <button class="btn-add" id="uploadCsvBtn">CSV ဖိုင် တင်မည်</button>
+            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် အစုလိုက် တင်ရန်</h3>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">ID, Name, Department ခေါင်းစဉ်များသာ လိုအပ်ပါသည်။</p>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="padding: 10px; background: white;">
+            <button class="btn-add" id="uploadExcelBtn">Excel ဖိုင် တင်မည်</button>
         </div>
 
         <div class="admin-section-box">
@@ -194,11 +214,11 @@
         </div>
     </div>
 
-    <button id="closeSettingsBtn" style="background: linear-gradient(45deg, #6c757d, #adb5bd);">နောက်သို့ ပြန်သွားမည်</button>
+    <button id="closeSettingsBtn" class="btn-back">နောက်သို့ ပြန်သွားမည်</button>
     <button class="logout-btn" id="logoutBtn">အကောင့်ထွက်မည် (Logout)</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -217,30 +237,18 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     
-    // Admin IDs & Logic
-    const ADMINS = {
-        "SPTKYAWPHYO01": "SPT Agency",
-        "MMDTIYA001": "MMD Agency"
-    };
+    const ADMINS = { "SPTKYAWPHYO01": "SPT Agency", "MMDTIYA001": "MMD Agency" };
 
-    let currentEmpId = "";
-    let currentEmpData = null;
-    let selectedTime = "";
-    let isAdmin = false;
-    let adminAgency = "";
-    let isEditing = false; 
-
+    let currentEmpId = "", currentEmpData = null, selectedTime = "", isAdmin = false, adminAgency = "", isEditing = false; 
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
-    const secLogin = document.getElementById("loginSection");
-    const secSetup = document.getElementById("setupSection");
-    const secForm = document.getElementById("formSection");
-    const secAdmin = document.getElementById("adminSection");
-    const secSettings = document.getElementById("settingsSection");
-    
-    const navTitle = document.getElementById("navTitle");
-    const navSettingsBtn = document.getElementById("navSettingsBtn");
+    // UI Elements
+    const secLogin = document.getElementById("loginSection"), secSetup = document.getElementById("setupSection");
+    const secForm = document.getElementById("formSection"), secAdmin = document.getElementById("adminSection");
+    const secSettings = document.getElementById("settingsSection"), secHistory = document.getElementById("historySection");
+    const secEmpList = document.getElementById("empListSection");
+    const navTitle = document.getElementById("navTitle"), navSettingsBtn = document.getElementById("navSettingsBtn");
     const dailyShiftSelect = document.getElementById("dailyShiftSelect");
 
     // ==========================================
@@ -257,51 +265,35 @@
         checkLogin(idInput);
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("savedEmpId");
-        location.reload();
-    });
+    document.getElementById("logoutBtn").addEventListener("click", () => { localStorage.removeItem("savedEmpId"); location.reload(); });
 
     function hideAllSections() {
-        secLogin.classList.add("hidden");
-        secSetup.classList.add("hidden");
-        secForm.classList.add("hidden");
-        secAdmin.classList.add("hidden");
-        secSettings.classList.add("hidden");
+        [secLogin, secSetup, secForm, secAdmin, secSettings, secHistory, secEmpList].forEach(el => el.classList.add("hidden"));
     }
 
     async function checkLogin(empId) {
         if (ADMINS[empId]) {
-            isAdmin = true;
-            adminAgency = ADMINS[empId];
+            isAdmin = true; adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
             navTitle.innerText = "Ferry Time System";
             navSettingsBtn.style.display = "block";
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
-            hideAllSections();
-            secAdmin.classList.remove("hidden");
+            hideAllSections(); secAdmin.classList.remove("hidden");
             loadDashboardStats();
             return;
         }
 
         isAdmin = false;
-        const empRef = ref(db, 'employees/' + empId);
-        const snapshot = await get(empRef);
-        
+        const snapshot = await get(ref(db, 'employees/' + empId));
         if (snapshot.exists()) {
-            currentEmpId = empId;
-            currentEmpData = snapshot.val();
+            currentEmpId = empId; currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
             navTitle.innerText = "Ferry Time Table";
             navSettingsBtn.style.display = "block";
             
-            // First time setup - check only dormitory since agency is fixed by admin
             if (!currentEmpData.dormitory) {
-                hideAllSections();
-                secSetup.classList.remove("hidden");
-            } else {
-                checkTodaySubmission();
-            }
+                hideAllSections(); secSetup.classList.remove("hidden");
+            } else { checkTodaySubmission(); }
         } else {
             alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။ Admin ကိုဆက်သွယ်ပါ။");
             localStorage.removeItem("savedEmpId");
@@ -309,29 +301,24 @@
     }
 
     // ==========================================
-    // 2. Setup & Settings Navigation
+    // 2. Navigation & User Updates
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
         const dorm = document.getElementById("userDorm").value;
         if (!dorm) return alert("နေထိုင်သည့် အဆောင်ကို ရွေးချယ်ပေးပါ။");
-
         await update(ref(db, 'employees/' + currentEmpId), { dormitory: dorm });
-        currentEmpData.dormitory = dorm;
-        checkTodaySubmission();
+        currentEmpData.dormitory = dorm; checkTodaySubmission();
     });
 
     navSettingsBtn.addEventListener("click", () => {
-        hideAllSections();
-        secSettings.classList.remove("hidden");
+        hideAllSections(); secSettings.classList.remove("hidden");
         navTitle.innerText = "Settings Menu";
-        
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
             document.getElementById("userSettingsDiv").classList.add("hidden");
         } else {
             document.getElementById("userSettingsDiv").classList.remove("hidden");
             document.getElementById("adminSettingsDiv").classList.add("hidden");
-            // Show agency text, do not allow edit
             document.getElementById("displayUserAgency").innerText = currentEmpData.agency || "မသတ်မှတ်ရသေးပါ";
             document.getElementById("editUserDorm").value = currentEmpData.dormitory || "ဘွန်နခွန် BN တိုက်";
         }
@@ -339,51 +326,40 @@
 
     document.getElementById("closeSettingsBtn").addEventListener("click", () => {
         hideAllSections();
-        if (isAdmin) {
-            secAdmin.classList.remove("hidden");
-            navTitle.innerText = "Ferry Time System";
-        } else {
-            checkTodaySubmission();
-            navTitle.innerText = "Ferry Time Table";
-        }
+        if (isAdmin) { secAdmin.classList.remove("hidden"); navTitle.innerText = "Ferry Time System"; } 
+        else { checkTodaySubmission(); navTitle.innerText = "Ferry Time Table"; }
+    });
+    
+    document.querySelectorAll(".go-back-dash-btn").forEach(btn => {
+        btn.addEventListener("click", () => { hideAllSections(); secAdmin.classList.remove("hidden"); });
     });
 
     document.getElementById("updateProfileBtn").addEventListener("click", async () => {
         const dorm = document.getElementById("editUserDorm").value;
         await update(ref(db, 'employees/' + currentEmpId), { dormitory: dorm });
-        currentEmpData.dormitory = dorm;
-        alert("အဆောင်ပြောင်းလဲမှုကို သိမ်းဆည်းပြီးပါပြီ။");
+        currentEmpData.dormitory = dorm; alert("အဆောင်ပြောင်းလဲမှုကို သိမ်းဆည်းပြီးပါပြီ။");
     });
 
     // ==========================================
     // 3. User Form Actions (Shift & Time)
     // ==========================================
     async function checkTodaySubmission() {
-        hideAllSections();
-        secForm.classList.remove("hidden");
+        hideAllSections(); secForm.classList.remove("hidden");
         document.getElementById("empNameDisplay").innerText = currentEmpData.name + " (" + currentEmpId + ")";
-        
         const today = new Date().toLocaleDateString('en-CA');
-        const subRef = ref(db, `submissions/${today}/${currentEmpId}`);
-        const snapshot = await get(subRef);
+        const snapshot = await get(ref(db, `submissions/${today}/${currentEmpId}`));
         
         if(snapshot.exists()) {
             isEditing = true;
             document.getElementById("successView").classList.remove("hidden");
             document.getElementById("timeSelectionDiv").classList.add("hidden");
             document.getElementById("displaySubTime").innerText = snapshot.val().time;
-            
-            // Set dropdown to saved shift
-            if(snapshot.val().shift) {
-                dailyShiftSelect.value = snapshot.val().shift;
-            }
+            if(snapshot.val().shift) dailyShiftSelect.value = snapshot.val().shift;
         } else {
             isEditing = false;
             document.getElementById("successView").classList.add("hidden");
             document.getElementById("timeSelectionDiv").classList.remove("hidden");
             document.getElementById("reasonSection").classList.add("hidden"); 
-            
-            // Default to previously used shift or 'day'
             dailyShiftSelect.value = currentEmpData.lastShift || "day";
             renderTimeOptions();
         }
@@ -397,31 +373,21 @@
         renderTimeOptions();
     });
 
-    dailyShiftSelect.addEventListener("change", () => {
-        renderTimeOptions();
-    });
+    dailyShiftSelect.addEventListener("change", renderTimeOptions);
 
     function renderTimeOptions() {
-        const currentShift = dailyShiftSelect.value;
-        const slots = currentShift === "day" ? daySlots : nightSlots;
+        const slots = dailyShiftSelect.value === "day" ? daySlots : nightSlots;
         const container = document.getElementById("timeOptionsContainer");
-        container.innerHTML = "";
-        selectedTime = ""; 
-
+        container.innerHTML = ""; selectedTime = ""; 
         slots.forEach(slot => {
-            const btn = document.createElement("div");
-            btn.className = "time-btn";
-            btn.innerText = slot;
+            const btn = document.createElement("div"); btn.className = "time-btn"; btn.innerText = slot;
             btn.onclick = () => {
                 document.querySelectorAll(".time-btn").forEach(b => b.classList.remove("selected"));
                 btn.classList.add("selected");
-                
                 if (slot === "ကိုယ်တိုင်ဖြည့်ရန်") {
-                    document.getElementById("customTimeSection").classList.remove("hidden");
-                    selectedTime = "custom";
+                    document.getElementById("customTimeSection").classList.remove("hidden"); selectedTime = "custom";
                 } else {
-                    document.getElementById("customTimeSection").classList.add("hidden");
-                    selectedTime = slot;
+                    document.getElementById("customTimeSection").classList.add("hidden"); selectedTime = slot;
                 }
             };
             container.appendChild(btn);
@@ -436,72 +402,63 @@
             if(!customVal) return alert("ကိုယ်တိုင်ပြန်မည့် အချိန်ကို ဖြည့်ပေးပါ။");
             finalTime = customVal;
         }
-
         const reasonVal = document.getElementById("editReason").value.trim();
-        if (isEditing && !reasonVal) {
-            return alert("ကျေးဇူးပြု၍ အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်းကို ထည့်သွင်းပေးပါ။");
-        }
+        if (isEditing && !reasonVal) return alert("ကျေးဇူးပြု၍ အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်းကို ထည့်သွင်းပေးပါ။");
 
         const today = new Date().toLocaleDateString('en-CA');
-        const timeNow = new Date().toLocaleTimeString();
         const selectedShift = dailyShiftSelect.value;
-
-        // Save submission
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
-            time: finalTime,
-            shift: selectedShift,
-            name: currentEmpData.name,
-            dept: currentEmpData.dept || "",
-            agency: currentEmpData.agency,
-            dormitory: currentEmpData.dormitory,
-            submittedAt: timeNow,
+            time: finalTime, shift: selectedShift, name: currentEmpData.name, dept: currentEmpData.dept || "",
+            agency: currentEmpData.agency, dormitory: currentEmpData.dormitory, submittedAt: new Date().toLocaleTimeString(),
             editReason: isEditing ? reasonVal : ""
         });
-        
-        // Update user's last shift preference
         await update(ref(db, 'employees/' + currentEmpId), { lastShift: selectedShift });
         currentEmpData.lastShift = selectedShift;
-        
-        alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
-        checkTodaySubmission(); 
+        alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။"); checkTodaySubmission(); 
     });
 
     // ==========================================
-    // 4. Admin Dashboard 
+    // 4. Admin Dashboard & New Features
     // ==========================================
+    
+    // Add Individual Employee
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
         const empDept = document.getElementById("newEmpDept").value.trim();
-        // Shift is now handled by the user
-
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
-
-        await set(ref(db, 'employees/' + empId), { 
-            name: empName, dept: empDept, agency: adminAgency 
-        });
+        await set(ref(db, 'employees/' + empId), { name: empName, dept: empDept, agency: adminAgency });
         alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
-        document.getElementById("newEmpId").value = "";
-        document.getElementById("newEmpName").value = "";
-        document.getElementById("newEmpDept").value = "";
+        document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    document.getElementById("uploadCsvBtn").addEventListener("click", () => {
-        const fileInput = document.getElementById("csvFileInput");
-        if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ CSV ဖိုင် ရွေးချယ်ပါ။");
-
-        Papa.parse(fileInput.files[0], {
-            header: true, skipEmptyLines: true,
-            complete: async function(results) {
-                const data = results.data;
+    // Upload Excel File (.xlsx using SheetJS)
+    document.getElementById("uploadExcelBtn").addEventListener("click", () => {
+        const fileInput = document.getElementById("excelFileInput");
+        if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel သို့မဟုတ် CSV ဖိုင် ရွေးချယ်ပါ။");
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.SheetNames[0];
+                const json = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                
                 let successCount = 0;
-                for (let i = 0; i < data.length; i++) {
-                    const row = data[i];
-                    const id = row["ID"] ? row["ID"].trim().toUpperCase() : null;
+                for (let i = 0; i < json.length; i++) {
+                    const row = json[i];
+                    // Flexible key mapping for ID, Name, Dept
+                    let idKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'ID' || k.trim().toUpperCase() === 'EMP ID');
+                    let nameKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'NAME');
+                    let deptKey = Object.keys(row).find(k => k.trim().toUpperCase() === 'DEPARTMENT' || k.trim().toUpperCase() === 'DEPT');
+
+                    const id = idKey ? String(row[idKey]).trim().toUpperCase() : null;
                     if (id) {
                         await set(ref(db, 'employees/' + id), {
-                            name: row["Name"] ? row["Name"].trim() : "Unknown",
-                            dept: row["Department"] ? row["Department"].trim() : "",
+                            name: nameKey ? String(row[nameKey]).trim() : "Unknown",
+                            dept: deptKey ? String(row[deptKey]).trim() : "",
                             agency: adminAgency // Auto force assigning this admin's agency
                         });
                         successCount++;
@@ -509,38 +466,35 @@
                 }
                 alert(`ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`);
                 fileInput.value = "";
+            } catch (err) {
+                alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။ ဇယားခေါင်းစဉ်များ မှန်ကန်မှုရှိမရှိ စစ်ဆေးပါ။");
+                console.error(err);
             }
-        });
+        };
+        reader.readAsArrayBuffer(file);
     });
 
+    // Load Dashboard Details
     function loadDashboardStats() {
         if(!isAdmin) return;
         const today = new Date().toLocaleDateString('en-CA');
-        const empRef = ref(db, 'employees');
-        const subRef = ref(db, `submissions/${today}`);
-
-        onValue(empRef, (snapshot) => {
+        onValue(ref(db, 'employees'), (snapshot) => {
             let total = 0;
             if (snapshot.exists()) {
-                const employees = snapshot.val();
-                for (let key in employees) {
-                    if (employees[key].agency === adminAgency) total++;
-                }
+                const emps = snapshot.val();
+                for (let k in emps) if (emps[k].agency === adminAgency) total++;
             }
             document.getElementById("countTotal").innerText = total;
             
-            onValue(subRef, (subSnapshot) => {
-                let submitted = 0;
-                let breakdown = {}; 
-
+            onValue(ref(db, `submissions/${today}`), (subSnapshot) => {
+                let submitted = 0; let breakdown = {}; 
                 if (subSnapshot.exists()) {
-                    const submissions = subSnapshot.val();
-                    for (let key in submissions) {
-                        const sub = submissions[key];
-                        if (sub.agency === adminAgency) {
+                    const subs = subSnapshot.val();
+                    for (let k in subs) {
+                        if (subs[k].agency === adminAgency) {
                             submitted++;
-                            let dorm = sub.dormitory || "မသိရသော အဆောင်";
-                            let t = sub.time || "မသိရသော အချိန်";
+                            let dorm = subs[k].dormitory || "မသိရသော အဆောင်";
+                            let t = subs[k].time || "မသိရသော အချိန်";
                             if (!breakdown[dorm]) breakdown[dorm] = {};
                             if (!breakdown[dorm][t]) breakdown[dorm][t] = 0;
                             breakdown[dorm][t]++;
@@ -554,15 +508,71 @@
                 let bdHtml = "";
                 for (let dorm in breakdown) {
                     bdHtml += `<div class="breakdown-dorm"><h4>🏢 ${dorm}</h4>`;
-                    for (let t in breakdown[dorm]) {
-                        bdHtml += `<div class="breakdown-row"><span>🕒 ${t}</span> <strong>${breakdown[dorm][t]} ဦး</strong></div>`;
-                    }
+                    for (let t in breakdown[dorm]) { bdHtml += `<div class="breakdown-row"><span>🕒 ${t}</span> <strong>${breakdown[dorm][t]} ဦး</strong></div>`; }
                     bdHtml += `</div>`;
                 }
                 document.getElementById("breakdownContent").innerHTML = bdHtml || "<p style='text-align:center; color:#777;'>ယနေ့အတွက် ကားစာရင်း မရှိသေးပါ။</p>";
             });
         });
     }
+
+    // --- New Feature: History View ---
+    document.getElementById("goToHistoryBtn").addEventListener("click", () => {
+        hideAllSections(); secHistory.classList.remove("hidden");
+        document.getElementById("historyDate").value = new Date().toLocaleDateString('en-CA');
+        fetchHistory();
+    });
+    
+    document.getElementById("fetchHistoryBtn").addEventListener("click", fetchHistory);
+    
+    async function fetchHistory() {
+        const date = document.getElementById("historyDate").value;
+        if(!date) return;
+        document.getElementById("historyContent").innerHTML = "<p style='text-align:center;'>ရှာဖွေနေပါသည်...</p>";
+        const snapshot = await get(ref(db, `submissions/${date}`));
+        
+        if(!snapshot.exists()) {
+            document.getElementById("historyContent").innerHTML = "<p style='text-align:center;color:red;'>ရွေးချယ်ထားသော ရက်အတွက် စာရင်းမရှိပါ။</p>";
+            return;
+        }
+        
+        const subs = snapshot.val();
+        let html = "", count = 0;
+        for(let id in subs) {
+            if(subs[id].agency === adminAgency) {
+                count++;
+                html += `<div class="data-card">
+                    <strong>${subs[id].name} (${id})</strong><br>
+                    🚗 ပြန်မည့်အချိန်: <span class="highlight">${subs[id].time}</span><br>
+                    🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}<br>
+                    ${subs[id].editReason ? `<span class="alert-text">* ပြင်ဆင်ရသည့်အကြောင်းရင်း: ${subs[id].editReason}</span>` : ""}
+                </div>`;
+            }
+        }
+        document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
+    }
+
+    // --- New Feature: Employee List View ---
+    document.getElementById("goToEmpListBtn").addEventListener("click", async () => {
+        hideAllSections(); secEmpList.classList.remove("hidden");
+        document.getElementById("empListContent").innerHTML = "<p style='text-align:center;'>ရှာဖွေနေပါသည်...</p>";
+        
+        const snapshot = await get(ref(db, 'employees'));
+        if(!snapshot.exists()) return document.getElementById("empListContent").innerHTML = "<p>ဝန်ထမ်းစာရင်း မရှိသေးပါ။</p>";
+        
+        const emps = snapshot.val();
+        let html = "", count = 0;
+        for(let id in emps) {
+            if(emps[id].agency === adminAgency) {
+                count++;
+                html += `<div class="data-card" style="padding: 10px;">
+                    <strong>${id}</strong> - ${emps[id].name} 
+                    <div style="font-size:12px; color:#777; margin-top:4px;">${emps[id].dept ? 'ဌာန: '+emps[id].dept : ''}</div>
+                </div>`;
+            }
+        }
+        document.getElementById("empListContent").innerHTML = `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
+    });
 
 </script>
 </body>
