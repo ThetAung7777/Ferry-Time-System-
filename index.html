@@ -70,11 +70,11 @@
             <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းအသစ် ထည့်ရန်</h3>
             <div class="form-group">
                 <label>Employee ID</label>
-                <input type="text" id="newEmpId" placeholder="ဥပမာ - EMP002">
+                <input type="text" id="newEmpId" placeholder="ဥပမာ - EMP001">
             </div>
             <div class="form-group">
                 <label>ဝန်ထမ်းအမည်</label>
-                <input type="text" id="newEmpName" placeholder="ဥပမာ - ကျော်ကျော်">
+                <input type="text" id="newEmpName" placeholder="ဥပမာ - Thet Aung">
             </div>
             <div class="form-group">
                 <label>အလုပ်ဆိုင်း (Shift)</label>
@@ -90,7 +90,7 @@
             <h3 style="color: #dc3545; margin-top: 0;">🗑️ ဝန်ထမ်းစာရင်းမှ ဖျက်ရန်</h3>
             <div class="form-group">
                 <label>ဖျက်လိုသော Employee ID ရိုက်ထည့်ပါ</label>
-                <input type="text" id="removeEmpId" placeholder="ဥပမာ - EMP002">
+                <input type="text" id="removeEmpId" placeholder="ဥပမာ - EMP001">
             </div>
             <button class="btn-remove" id="removeEmpBtn">ဝန်ထမ်းစာရင်းမှ ပယ်ဖျက်မည်</button>
         </div>
@@ -104,10 +104,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // သင့်ရဲ့ Firebase Config အစစ်
+    // Update ဖြည့်သွင်းထားသော Firebase Config အစစ်
     const firebaseConfig = {
         apiKey: "AIzaSyCsKoGsSo6tOHeX2xbszgj_oyZAqt5DlD0",
         authDomain: "ferry-time-system.firebaseapp.com",
+        databaseURL: "https://ferry-time-system-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "ferry-time-system",
         storageBucket: "ferry-time-system.firebasestorage.app",
         messagingSenderId: "399802117425",
@@ -234,14 +235,18 @@
 
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
 
-        await set(ref(db, 'employees/' + empId), {
-            name: empName,
-            shift: empShift
-        });
-
-        alert("ဝန်ထမ်းအသစ် " + empName + " (" + empId + ") ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။");
-        document.getElementById("newEmpId").value = "";
-        document.getElementById("newEmpName").value = "";
+        try {
+            await set(ref(db, 'employees/' + empId), {
+                name: empName,
+                shift: empShift
+            });
+            alert("ဝန်ထမ်းအသစ် " + empName + " (" + empId + ") ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။");
+            document.getElementById("newEmpId").value = "";
+            document.getElementById("newEmpName").value = "";
+        } catch (error) {
+            alert("အမှားအယွင်းဖြစ်နေပါသည်။ Database Rules ကို စစ်ဆေးပါ။");
+            console.error(error);
+        }
     });
 
     // Admin - ဝန်ထမ်း ဖျက်ခြင်း
