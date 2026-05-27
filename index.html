@@ -29,7 +29,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Modern Login Form Design */
-        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 65px); padding: 20px; }
+        .login-wrapper { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .login-card { background: rgba(255, 255, 255, 0.9); padding: 40px 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); text-align: center; }
         .login-card .avatar-box { width: 70px; height: 70px; background: linear-gradient(45deg, #007bff, #00c6ff); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; margin: 0 auto 20px auto; box-shadow: 0 8px 20px rgba(0,123,255,0.3); }
         .login-card h3 { margin: 0 0 10px 0; color: #333; font-size: 22px; font-weight: bold; }
@@ -88,10 +88,10 @@
 </head>
 <body>
 
-<nav class="navbar id="topNavbar" class="hidden">
+<nav class="navbar hidden" id="topNavbar">
     <div class="navbar-content">
         <div style="width: 36px;"></div> 
-        <h2 id="navTitle">Shuttle System</h2>
+        <h2 id="navTitle">Ferry Time Table</h2>
         
         <div class="profile-container" id="profileContainer">
             <div class="profile-icon" id="profileIcon">👤</div>
@@ -305,7 +305,7 @@
     let listSubmittedEmps = [];
     let listRemainingEmps = [];
     let exportDataBuffer = [];
-    let conflictExcelData = []; // Buffer for wrong cross agency data
+    let conflictExcelData = [];
 
     const secLogin = document.getElementById("loginSection"), secSetup = document.getElementById("setupSection");
     const secForm = document.getElementById("formSection"), secAdmin = document.getElementById("adminSection");
@@ -313,6 +313,7 @@
     const secDetailList = document.getElementById("detailListSection");
     
     const navTitle = document.getElementById("navTitle");
+    const topNavbar = document.getElementById("topNavbar");
     const profileContainer = document.getElementById("profileContainer");
     const profileIcon = document.getElementById("profileIcon");
     const profileDropdown = document.getElementById("profileDropdown");
@@ -346,14 +347,20 @@
         checkLogin(idInput);
     });
 
+    function hideAllSections() {
+        // Only hide the main content sections. We handle navbar separately.
+        [document.querySelector(".login-wrapper"), secSetup, secForm, secAdmin, secSettings, secHistory, secDetailList].forEach(el => {
+            if (el) el.classList.add("hidden");
+        });
+    }
+
     async function checkLogin(empId) {
-        document.getElementById("topNavbar").classList.remove("hidden"); // Show navbar on login success
-        
         if (ADMINS[empId]) {
             isAdmin = true; adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
             
-            navTitle.innerText = `${adminAgency.split(" ")[0]} Ferry Time Table`; // Dynamic Header
+            navTitle.innerText = `${adminAgency.split(" ")[0]} Ferry Time Table`; 
+            topNavbar.classList.remove("hidden"); // Show navbar
             profileContainer.style.display = "block";
             dropName.innerText = "Admin Panel"; dropId.innerText = "ID: " + empId;
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
@@ -370,7 +377,8 @@
             localStorage.setItem("savedEmpId", empId);
             
             let displayAgencyShort = currentEmpData.agency ? currentEmpData.agency.split(" ")[0] : "Agency";
-            navTitle.innerText = `${displayAgencyShort} Ferry Time Table`; // Dynamic Header for User
+            navTitle.innerText = `${displayAgencyShort} Ferry Time Table`; 
+            topNavbar.classList.remove("hidden"); // Show navbar
             profileContainer.style.display = "block";
             dropName.innerText = currentEmpData.name; dropId.innerText = "ID: " + empId;
             
@@ -380,12 +388,11 @@
         } else {
             alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။ Admin ကိုဆက်သွယ်ပါ။");
             localStorage.removeItem("savedEmpId");
-            document.getElementById("topNavbar").classList.add("hidden");
         }
     }
 
     // ==========================================
-    // 2. Settings & Profile Changes
+    // 2. Settings Navigation
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
         const dorm = document.getElementById("userDorm").value;
@@ -395,6 +402,7 @@
     });
 
     document.getElementById("dropSettingsBtn").addEventListener("click", () => {
+        profileDropdown.classList.remove("show");
         hideAllSections(); secSettings.classList.remove("hidden");
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
@@ -505,7 +513,6 @@
         const empDept = document.getElementById("newEmpDept").value.trim();
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
         
-        // Individual validation check
         const checkSnap = await get(ref(db, 'employees/' + empId));
         if(checkSnap.exists() && checkSnap.val().agency !== adminAgency) {
             return alert(`❌ ဤဝန်ထမ်းသည် ${checkSnap.val().agency} တွင် စာရင်းရှိပြီးသား ဖြစ်ပါသည်။`);
@@ -516,7 +523,6 @@
         document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    // Excel Upload with Robust Cross-Agency Logic & Conflict Reporting
     document.getElementById("uploadExcelBtn").addEventListener("click", async () => {
         const fileInput = document.getElementById("excelFileInput");
         if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ Excel ဖိုင် ရွေးချယ်ပါ။");
@@ -530,9 +536,8 @@
         loader.classList.remove("hidden"); successMsg.classList.add("hidden"); errorBox.classList.add("hidden");
         uploadBtn.disabled = true; uploadBtn.style.opacity = "0.5";
         
-        conflictExcelData = []; // Clear old buffer
+        conflictExcelData = []; 
 
-        // Pre-fetch all database info once for extremely fast processing
         const allEmpsSnapshot = await get(ref(db, 'employees'));
         const existingDatabase = allEmpsSnapshot.exists() ? allEmpsSnapshot.val() : {};
 
@@ -574,7 +579,6 @@
                     let dept = deptKey ? String(row[deptKey]).trim() : "";
 
                     if (id && id !== "") {
-                        // CROSS AGENCY LOGIC CHECK
                         if (existingDatabase[id] && existingDatabase[id].agency !== adminAgency) {
                             conflictCount++;
                             conflictExcelData.push({
@@ -582,10 +586,9 @@
                                 "Name": name,
                                 "Department": dept,
                                 "Existing Agency": existingDatabase[id].agency,
-                                "Status": "MMD ကထည့်ထားပါသည် (Conflict)"
+                                "Status": `${existingDatabase[id].agency} ကထည့်ထားပါသည် (Conflict)`
                             });
                         } else {
-                            // Valid insert or updating own agency's record
                             await set(ref(db, 'employees/' + id), {
                                 name: name, dept: dept, agency: adminAgency 
                             });
@@ -599,7 +602,7 @@
                 successMsg.classList.remove("hidden");
                 
                 if (conflictCount > 0) {
-                    errorText.innerText = `⚠ အခြား Agency (MMD) တွင် ရှိပြီးသားဖြစ်၍ ကျော်သွားသော ဝန်ထမ်း ${conflictCount} ဦး ရှိပါသည်။ အောက်ပါခလုတ်မှ ၎င်းစာရင်းအား Excel ထုတ်ယူနိုင်ပါသည်။`;
+                    errorText.innerText = `⚠ အခြား Agency တွင် ရှိပြီးသားဖြစ်၍ ကျော်သွားသော ဝန်ထမ်း ${conflictCount} ဦး ရှိပါသည်။ အောက်ပါခလုတ်မှ ၎င်းစာရင်းအား Excel ထုတ်ယူနိုင်ပါသည်။`;
                     errorBox.classList.remove("hidden");
                 }
                 fileInput.value = "";
@@ -613,16 +616,14 @@
         setTimeout(() => { reader.readAsArrayBuffer(file); }, 100);
     });
 
-    // Conflict Excel Downloader Function
     document.getElementById("downloadConflictExcelBtn").addEventListener("click", () => {
         if(conflictExcelData.length === 0) return;
         const ws = XLSX.utils.json_to_sheet(conflictExcelData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Conflicts");
-        XLSX.writeFile(wb, `MMD_စာရင်းရှိပြီးသား_မှားယွင်းမှုစာရင်း_${getLogicalDate()}.xlsx`);
+        XLSX.writeFile(wb, `${adminAgency}_စာရင်းရှိပြီးသား_မှားယွင်းမှုစာရင်း_${getLogicalDate()}.xlsx`);
     });
 
-    // Bulk Delete via Excel Mode
     document.getElementById("uploadDeleteExcelBtn").addEventListener("click", () => {
         const fileInput = document.getElementById("deleteExcelFileInput");
         if (fileInput.files.length === 0) return alert("ပယ်ဖျက်ရန် Excel ဖိုင်ကို အရင်ရွေးချယ်ပေးပါ။");
@@ -649,7 +650,6 @@
                         let finalId = String(id).trim().toUpperCase();
                         const checkRef = ref(db, 'employees/' + finalId);
                         const snap = await get(checkRef);
-                        // Security check: Only allow deleting own agency employees
                         if (snap.exists() && snap.val().agency === adminAgency) {
                             await remove(checkRef);
                             deleteCount++;
@@ -665,7 +665,22 @@
         reader.readAsArrayBuffer(file);
     });
 
-    // Single Employee Delete function
+    document.getElementById("removeEmpBtn").addEventListener("click", async () => {
+        const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
+        if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
+        const empRef = ref(db, 'employees/' + empId);
+        const snapshot = await get(empRef);
+        if (snapshot.exists()) {
+            if (snapshot.val().agency === adminAgency) {
+                if (confirm(`ID - ${empId} ကို စာရင်းမှ အပြီးအပိုင်ဖျက်ရန် သေချာပါသလား?`)) {
+                    await remove(empRef);
+                    alert(`ID - ${empId} ကို အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။`);
+                    document.getElementById("removeEmpId").value = "";
+                }
+            } else { alert("ဤဝန်ထမ်းသည် သင့် Agency အောက်တွင် မရှိပါ။"); }
+        } else { alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။"); }
+    });
+
     document.getElementById("dailyRefreshBtn").addEventListener("click", async () => {
         if (!confirm("ယနေ့အတွက် ကားစာရင်းများကို Excel ထုတ်ယူပြီးပြီလား?")) return;
         if (confirm("🔄 သင့် Agency ၏ ယနေ့စာရင်းအားလုံးကို ရှင်းလင်းပြီး အသစ်ပြန်စရန် သေချာပါသလား?")) {
@@ -684,7 +699,6 @@
         }
     });
 
-    // Dashboard Engine
     function loadDashboardStats() {
         if(!isAdmin) return; const today = getLogicalDate();
         onValue(ref(db, 'employees'), (snapshot) => {
@@ -726,7 +740,6 @@
         });
     }
 
-    // Displays lists
     document.getElementById("statTotal").addEventListener("click", () => showDetailList('total'));
     document.getElementById("statSubmitted").addEventListener("click", () => showDetailList('submitted'));
     document.getElementById("statRemaining").addEventListener("click", () => showDetailList('remaining'));
@@ -768,7 +781,6 @@
         XLSX.utils.book_append_sheet(wb, ws, "List"); XLSX.writeFile(wb, `${document.getElementById("detailListTitle").innerText}_${getLogicalDate()}.xlsx`);
     });
 
-    // --- History View ---
     document.getElementById("goToHistoryBtn").addEventListener("click", () => {
         hideAllSections(); secHistory.classList.remove("hidden"); document.getElementById("historyDate").value = getLogicalDate(); fetchHistory();
     });
@@ -782,7 +794,7 @@
         for(let id in subs) {
             if(subs[id].agency === adminAgency) {
                 count++;
-                html += `<div class="data-card"><strong>${subs[id].name} (${id})</strong><br>🚗 ပြันမည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}</div>`;
+                html += `<div class="data-card"><strong>${subs[id].name} (${id})</strong><br>🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}</div>`;
             }
         }
         document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
