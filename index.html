@@ -8,9 +8,9 @@
         * { box-sizing: border-box; font-family: sans-serif; }
         body { background-color: #f4f6f9; padding: 0; margin: 0; }
         
-        /* Top Navigation Bar */
+        /* Navbar */
         .navbar { background-color: #007bff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .navbar h2 { margin: 0; font-size: 20px; }
+        .navbar h2 { margin: 0; font-size: 18px; }
         .settings-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
         
         .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -29,6 +29,11 @@
         .time-btn.selected { background: #d4edda; border-color: #28a745; color: #155724; }
         .custom-time-box { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; }
         
+        /* Success View */
+        .success-box { background-color: #d4edda; color: #155724; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; }
+        .btn-edit { background-color: #ffc107; color: #212529; }
+        .btn-edit:hover { background-color: #e0a800; }
+        
         /* Admin Dashboard Styles */
         .admin-section-box { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
         .btn-add { background-color: #28a745; }
@@ -36,13 +41,18 @@
         .logout-btn { background-color: #dc3545; margin-top: 30px; }
         .logout-btn:hover { background-color: #c82333; }
         
-        /* Dashboard Stats */
+        /* Dashboard Stats & Breakdown */
         .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-        .stat-box { flex: 1; background: #e9ecef; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
+        .stat-box { flex: 1; background: #e9ecef; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #ddd; }
         .stat-box h3 { margin: 0 0 5px 0; font-size: 24px; color: #007bff; }
         .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #555; }
         
+        .breakdown-dorm { margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .breakdown-dorm h4 { color: #d81b60; margin: 0 0 8px 0; font-size: 16px; }
+        .breakdown-row { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 5px; padding: 5px; background: #fff; border-radius: 4px; border: 1px solid #eee; }
+        
         .setup-alert { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
+        .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 2px 8px; border-radius: 12px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -62,8 +72,8 @@
 </div>
 
 <div class="container hidden" id="setupSection">
-    <h2 class="section-title">ကိုယ်ရေးအချက်အလက် ဖြည့်သွင်းရန်</h2>
-    <div class="setup-alert">သင်၏ Agency နှင့် အဆောင်အမည်ကို ပထမဆုံးအကြိမ် ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။ နောက်ပိုင်းတွင် ⚙️ Settings မှ ပြန်ပြင်နိုင်ပါသည်။</div>
+    <h2 class="section-title">အချက်အလက် ဖြည့်သွင်းရန်</h2>
+    <div class="setup-alert">သင်၏ Agency နှင့် အဆောင်အမည်ကို ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။</div>
     
     <div class="form-group">
         <label>Agency ရွေးချယ်ပါ</label>
@@ -89,33 +99,48 @@
     <h2 class="section-title">အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
     <p style="text-align: center; font-weight: bold; color: #555;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
     
-    <div class="form-group">
-        <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
-        <div id="timeOptionsContainer" class="time-options"></div>
+    <div id="successView" class="success-box hidden">
+        <h3 style="margin-top: 0;">✅ အောင်မြင်စွာ တင်ပြီးပါပြီ</h3>
+        <p>ယနေ့အတွက် သင်ရွေးချယ်ထားသော အချိန်:<br><strong id="displaySubTime" style="font-size: 20px; color: #0056b3;"></strong></p>
+        <button id="editTimeBtn" class="btn-edit">ကားအချိန် ပြင်ဆင်ရန် (Edit)</button>
     </div>
 
-    <div id="customTimeSection" class="form-group hidden custom-time-box">
-        <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
-        <input type="time" id="customTime">
-    </div>
+    <div id="timeSelectionDiv">
+        <div class="form-group">
+            <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
+            <div id="timeOptionsContainer" class="time-options"></div>
+        </div>
 
-    <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+        <div id="customTimeSection" class="form-group hidden custom-time-box">
+            <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
+            <input type="time" id="customTime">
+        </div>
+
+        <div id="reasonSection" class="form-group hidden" style="background: #fff3cd; padding: 10px; border-radius: 6px;">
+            <label style="color: #dc3545;">* အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်း (မဖြစ်မနေထည့်ပါ)</label>
+            <input type="text" id="editReason" placeholder="ဥပမာ - OT ဆင်းရသဖြင့်">
+        </div>
+
+        <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+    </div>
 </div>
 
 <div class="container hidden" id="adminSection">
-    <h2 class="section-title">ယနေ့ စာရင်း အကျဉ်းချုပ်</h2>
-    <div class="stats-container">
-        <div class="stat-box" id="statTotal">
-            <h3 id="countTotal">0</h3>
-            <p>စုစုပေါင်း</p>
+    <h2 class="section-title">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
+
+    <div class="admin-section-box">
+        <h3 style="color: #007bff; margin-top: 0;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
+        <div class="stats-container">
+            <div class="stat-box"><h3 id="countTotal">0</h3><p>စုစုပေါင်း</p></div>
+            <div class="stat-box"><h3 id="countSubmitted" style="color: #28a745;">0</h3><p>ဖြည့်ပြီး</p></div>
+            <div class="stat-box"><h3 id="countRemaining" style="color: #dc3545;">0</h3><p>ကျန်ရှိ</p></div>
         </div>
-        <div class="stat-box" id="statSubmitted">
-            <h3 id="countSubmitted" style="color: #28a745;">0</h3>
-            <p>ဖြည့်ပြီး</p>
-        </div>
-        <div class="stat-box" id="statRemaining">
-            <h3 id="countRemaining" style="color: #dc3545;">0</h3>
-            <p>ကျန်ရှိ</p>
+    </div>
+
+    <div class="admin-section-box" style="background: #e8f4f8;">
+        <h3 style="color: #17a2b8; margin-top: 0;">🚌 အဆောင် နှင့် အချိန်အလိုက် စာရင်း</h3>
+        <div id="breakdownContent">
+            <p style="text-align: center; color: #777;">စာရင်း တွက်ချက်နေပါသည်...</p>
         </div>
     </div>
 </div>
@@ -154,18 +179,9 @@
 
         <div class="admin-section-box">
             <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းတစ်ဦးချင်း ထည့်ရန်</h3>
-            <div class="form-group">
-                <label>Employee ID</label>
-                <input type="text" id="newEmpId">
-            </div>
-            <div class="form-group">
-                <label>ဝန်ထမ်းအမည်</label>
-                <input type="text" id="newEmpName">
-            </div>
-             <div class="form-group">
-                <label>ဌာန (Department)</label>
-                <input type="text" id="newEmpDept">
-            </div>
+            <div class="form-group"><label>Employee ID</label><input type="text" id="newEmpId"></div>
+            <div class="form-group"><label>ဝန်ထမ်းအမည်</label><input type="text" id="newEmpName"></div>
+            <div class="form-group"><label>ဌာန (Department)</label><input type="text" id="newEmpDept"></div>
             <div class="form-group">
                 <label>အလုပ်ဆိုင်း (Shift)</label>
                 <select id="newEmpShift">
@@ -200,30 +216,34 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     
-    // Admins သတ်မှတ်ခြင်း
-    const ADMIN_IDS = ["SPTKYAWPHYO01", "MMDTIYA001"];
+    // Admin IDs & Logic
+    const ADMINS = {
+        "SPTKYAWPHYO01": "SPT Agency",
+        "MMDTIYA001": "MMD Agency"
+    };
 
     let currentEmpId = "";
     let currentEmpData = null;
     let selectedTime = "";
     let isAdmin = false;
+    let adminAgency = "";
+    
+    let isEditing = false; // To track if user is editing their submission
 
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
-    // Sections
     const secLogin = document.getElementById("loginSection");
     const secSetup = document.getElementById("setupSection");
     const secForm = document.getElementById("formSection");
     const secAdmin = document.getElementById("adminSection");
     const secSettings = document.getElementById("settingsSection");
     
-    // UI Elements
     const navTitle = document.getElementById("navTitle");
     const navSettingsBtn = document.getElementById("navSettingsBtn");
 
     // ==========================================
-    // 1. Initialization & Login
+    // 1. App Start & Login
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const savedId = localStorage.getItem("savedEmpId");
@@ -250,17 +270,21 @@
     }
 
     async function checkLogin(empId) {
-        if (ADMIN_IDS.includes(empId)) {
+        // Check if Admin
+        if (ADMINS[empId]) {
             isAdmin = true;
+            adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
             navTitle.innerText = "Ferry Time System";
             navSettingsBtn.style.display = "block";
+            document.getElementById("adminAgencyBadge").innerText = adminAgency;
             hideAllSections();
             secAdmin.classList.remove("hidden");
             loadDashboardStats();
             return;
         }
 
+        // Check if User
         isAdmin = false;
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
@@ -272,12 +296,16 @@
             navTitle.innerText = "Ferry Time Table";
             navSettingsBtn.style.display = "block";
             
-            // Check if user has Agency and Dormitory saved
+            // Check First-Time Setup
             if (!currentEmpData.agency || !currentEmpData.dormitory) {
+                if (currentEmpData.agency) {
+                    document.getElementById("userAgency").value = currentEmpData.agency;
+                    document.getElementById("userAgency").disabled = true;
+                }
                 hideAllSections();
                 secSetup.classList.remove("hidden");
             } else {
-                showFormPage();
+                checkTodaySubmission();
             }
         } else {
             alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။");
@@ -289,14 +317,14 @@
     // 2. Setup & Settings Navigation
     // ==========================================
     document.getElementById("saveSetupBtn").addEventListener("click", async () => {
-        const agency = document.getElementById("userAgency").value;
+        const agency = currentEmpData.agency || document.getElementById("userAgency").value;
         const dorm = document.getElementById("userDorm").value;
         if (!agency || !dorm) return alert("Agency နှင့် အဆောင်ကို ရွေးချယ်ပေးပါ။");
 
         await update(ref(db, 'employees/' + currentEmpId), { agency: agency, dormitory: dorm });
         currentEmpData.agency = agency;
         currentEmpData.dormitory = dorm;
-        showFormPage();
+        checkTodaySubmission();
     });
 
     navSettingsBtn.addEventListener("click", () => {
@@ -321,7 +349,8 @@
             secAdmin.classList.remove("hidden");
             navTitle.innerText = "Ferry Time System";
         } else {
-            showFormPage();
+            checkTodaySubmission();
+            navTitle.innerText = "Ferry Time Table";
         }
     });
 
@@ -335,17 +364,46 @@
     });
 
     // ==========================================
-    // 3. User Form Actions
+    // 3. User Form Actions (Success / Edit Logic)
     // ==========================================
-    function showFormPage() {
+    async function checkTodaySubmission() {
         hideAllSections();
         secForm.classList.remove("hidden");
-        navTitle.innerText = "Ferry Time Table";
         document.getElementById("empNameDisplay").innerText = currentEmpData.name + " (" + currentEmpId + ")";
         
+        const today = new Date().toLocaleDateString('en-CA');
+        const subRef = ref(db, `submissions/${today}/${currentEmpId}`);
+        const snapshot = await get(subRef);
+        
+        if(snapshot.exists()) {
+            // Already submitted today
+            isEditing = true;
+            document.getElementById("successView").classList.remove("hidden");
+            document.getElementById("timeSelectionDiv").classList.add("hidden");
+            document.getElementById("displaySubTime").innerText = snapshot.val().time;
+        } else {
+            // First time submit today
+            isEditing = false;
+            document.getElementById("successView").classList.add("hidden");
+            document.getElementById("timeSelectionDiv").classList.remove("hidden");
+            document.getElementById("reasonSection").classList.add("hidden"); // Hide reason for first submit
+            renderTimeOptions();
+        }
+    }
+    
+    // User clicks "Edit Time"
+    document.getElementById("editTimeBtn").addEventListener("click", () => {
+        document.getElementById("successView").classList.add("hidden");
+        document.getElementById("timeSelectionDiv").classList.remove("hidden");
+        document.getElementById("reasonSection").classList.remove("hidden"); // Show reason box
+        renderTimeOptions();
+    });
+
+    function renderTimeOptions() {
         const slots = currentEmpData.shift === "day" ? daySlots : nightSlots;
         const container = document.getElementById("timeOptionsContainer");
         container.innerHTML = "";
+        selectedTime = ""; // Reset selection
 
         slots.forEach(slot => {
             const btn = document.createElement("div");
@@ -376,6 +434,11 @@
             finalTime = customVal;
         }
 
+        const reasonVal = document.getElementById("editReason").value.trim();
+        if (isEditing && !reasonVal) {
+            return alert("ကျေးဇူးပြု၍ အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်းကို ထည့်သွင်းပေးပါ။");
+        }
+
         const today = new Date().toLocaleDateString('en-CA');
         const timeNow = new Date().toLocaleTimeString();
 
@@ -385,13 +448,16 @@
             dept: currentEmpData.dept || "",
             agency: currentEmpData.agency,
             dormitory: currentEmpData.dormitory,
-            submittedAt: timeNow
+            submittedAt: timeNow,
+            editReason: isEditing ? reasonVal : ""
         });
+        
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
+        checkTodaySubmission(); // Reload UI to show success box
     });
 
     // ==========================================
-    // 4. Admin Actions (Upload & Stats)
+    // 4. Admin Dashboard (Separated by Agency)
     // ==========================================
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
@@ -401,7 +467,9 @@
 
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
 
-        await set(ref(db, 'employees/' + empId), { name: empName, dept: empDept, shift: empShift });
+        await set(ref(db, 'employees/' + empId), { 
+            name: empName, dept: empDept, shift: empShift, agency: adminAgency 
+        });
         alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
         document.getElementById("newEmpId").value = "";
         document.getElementById("newEmpName").value = "";
@@ -424,14 +492,14 @@
                         await set(ref(db, 'employees/' + id), {
                             name: row["Name"] ? row["Name"].trim() : "Unknown",
                             shift: row["Shift"] ? row["Shift"].trim().toLowerCase() : "day",
-                            dept: row["Department"] ? row["Department"].trim() : ""
+                            dept: row["Department"] ? row["Department"].trim() : "",
+                            agency: adminAgency // Force auto-assign to this admin's agency
                         });
                         successCount++;
                     }
                 }
                 alert(`ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`);
                 fileInput.value = "";
-                loadDashboardStats();
             }
         });
     });
@@ -442,15 +510,53 @@
         const empRef = ref(db, 'employees');
         const subRef = ref(db, `submissions/${today}`);
 
+        // Fetch Employees
         onValue(empRef, (snapshot) => {
-            let total = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+            let total = 0;
+            if (snapshot.exists()) {
+                const employees = snapshot.val();
+                for (let key in employees) {
+                    if (employees[key].agency === adminAgency) total++;
+                }
+            }
             document.getElementById("countTotal").innerText = total;
             
+            // Fetch Submissions
             onValue(subRef, (subSnapshot) => {
-                let submitted = subSnapshot.exists() ? Object.keys(subSnapshot.val()).length : 0;
+                let submitted = 0;
+                let breakdown = {}; // To store count per dorm & time
+
+                if (subSnapshot.exists()) {
+                    const submissions = subSnapshot.val();
+                    for (let key in submissions) {
+                        const sub = submissions[key];
+                        // Filter by Admin's Agency
+                        if (sub.agency === adminAgency) {
+                            submitted++;
+                            
+                            let dorm = sub.dormitory || "မသိရသော အဆောင်";
+                            let t = sub.time || "မသိရသော အချိန်";
+                            
+                            if (!breakdown[dorm]) breakdown[dorm] = {};
+                            if (!breakdown[dorm][t]) breakdown[dorm][t] = 0;
+                            breakdown[dorm][t]++;
+                        }
+                    }
+                }
                 document.getElementById("countSubmitted").innerText = submitted;
                 let remaining = total - submitted;
                 document.getElementById("countRemaining").innerText = remaining >= 0 ? remaining : 0;
+
+                // Render Breakdown HTML
+                let bdHtml = "";
+                for (let dorm in breakdown) {
+                    bdHtml += `<div class="breakdown-dorm"><h4>🏢 ${dorm}</h4>`;
+                    for (let t in breakdown[dorm]) {
+                        bdHtml += `<div class="breakdown-row"><span>🕒 ${t}</span> <strong>${breakdown[dorm][t]} ဦး</strong></div>`;
+                    }
+                    bdHtml += `</div>`;
+                }
+                document.getElementById("breakdownContent").innerHTML = bdHtml || "<p style='text-align:center; color:#777;'>ယနေ့အတွက် ကားစာရင်း မရှိသေးပါ။</p>";
             });
         });
     }
