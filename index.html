@@ -45,6 +45,7 @@
         .btn-back { background: linear-gradient(45deg, #6c757d, #adb5bd); }
         .btn-delete { background: linear-gradient(45deg, #dc3545, #ff6b6b); box-shadow: 0 4px 10px rgba(220,53,69,0.3); }
         .btn-excel { background: linear-gradient(45deg, #20c997, #17a2b8); margin-bottom: 15px; margin-top: 0; }
+        .btn-refresh { background: linear-gradient(45deg, #fd7e14, #d63384); margin-bottom: 10px; margin-top: 0; }
         .hidden { display: none !important; }
         
         /* Time Options */
@@ -162,6 +163,7 @@
     
     <button id="goToHistoryBtn" class="btn-action">📅 နေ့စဉ် ကားစာရင်း (History)</button>
     <button id="goToEmpListBtn" class="btn-action">👥 ဝန်ထမ်းစာရင်း အားလုံးကြည့်ရန်</button>
+    <button id="dailyRefreshBtn" class="btn-refresh">🔄 ယနေ့စာရင်း အသစ်ပြန်စမည် (Refresh)</button>
     <div style="height: 15px;"></div>
 
     <div class="admin-section-box">
@@ -280,7 +282,6 @@
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
-    // Arrays to hold data for Excel Export
     let listTotalEmps = [];
     let listSubmittedEmps = [];
     let listRemainingEmps = [];
@@ -297,6 +298,20 @@
     const profileDropdown = document.getElementById("profileDropdown");
     const dropName = document.getElementById("dropName");
     const dropId = document.getElementById("dropId");
+
+    // ==========================================
+    // Core Feature: Logical Date (9 AM Cutoff)
+    // ==========================================
+    function getLogicalDate() {
+        const now = new Date();
+        if (now.getHours() < 9) {
+            now.setDate(now.getDate() - 1); // ၉ နာရီမထိုးခင် ယမန်နေ့အဖြစ်သတ်မှတ်မည်
+        }
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
     // Dropdown Logic
     profileIcon.addEventListener("click", (e) => {
@@ -409,7 +424,7 @@
     // ==========================================
     async function checkTodaySubmission() {
         hideAllSections(); secForm.classList.remove("hidden");
-        const today = new Date().toLocaleDateString('en-CA');
+        const today = getLogicalDate();
         const snapshot = await get(ref(db, `submissions/${today}/${currentEmpId}`));
         
         if(snapshot.exists()) {
@@ -468,7 +483,7 @@
         const reasonVal = document.getElementById("editReason").value.trim();
         if (isEditing && !reasonVal) return alert("ကျေးဇူးပြု၍ အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်းကို ထည့်သွင်းပေးပါ။");
 
-        const today = new Date().toLocaleDateString('en-CA');
+        const today = getLogicalDate();
         const selectedShift = document.getElementById("dailyShiftSelect").value;
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
             time: finalTime, shift: selectedShift, name: currentEmpData.name, dept: currentEmpData.dept || "",
@@ -507,6 +522,39 @@
                 }
             } else { alert("ဤဝန်ထမ်းသည် သင့် Agency အောက်တွင် မရှိပါ။"); }
         } else { alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။"); }
+    });
+
+    // --- Daily Refresh Button ---
+    document.getElementById("dailyRefreshBtn").addEventListener("click", async () => {
+        const confirm1 = confirm("ယနေ့အတွက် ကားစာရင်းများကို Excel ဖြင့် ဒေါင်းလုပ်ဆွဲ သိမ်းဆည်းပြီးပါပြီလား?");
+        if (!confirm1) return;
+        
+        const confirm2 = confirm("သတိပြုရန် - ယခုလုပ်ဆောင်ချက်သည် သင့် Agency ၏ ယနေ့စာရင်းအားလုံးကို ဖျက်ပစ်ပြီး အသစ်ပြန်စမည်ဖြစ်ပါသည်။ သေချာပါသလား?");
+        if (confirm2) {
+            const today = getLogicalDate();
+            const snapshot = await get(ref(db, `submissions/${today}`));
+            
+            if (snapshot.exists()) {
+                const subs = snapshot.val();
+                const updates = {};
+                let hasData = false;
+                for (let key in subs) {
+                    if (subs[key].agency === adminAgency) {
+                        updates[key] = null; // delete submission
+                        hasData = true;
+                    }
+                }
+                
+                if (hasData) {
+                    await update(ref(db, `submissions/${today}`), updates);
+                    alert("✅ ယနေ့အတွက် စာရင်းအသစ် ပြန်လည်စတင်ပါပြီ။ ဝန်ထမ်းများ ဖောင်ပြန်ဖြည့်နိုင်ပါပြီ။");
+                } else {
+                    alert("ဖျက်ရန် စာရင်းမရှိပါ။");
+                }
+            } else {
+                alert("ဖျက်ရန် စာရင်းမရှိပါ။");
+            }
+        }
     });
 
     document.getElementById("uploadExcelBtn").addEventListener("click", () => {
@@ -583,7 +631,7 @@
     // Load Dashboard Details & Prepare Lists
     function loadDashboardStats() {
         if(!isAdmin) return;
-        const today = new Date().toLocaleDateString('en-CA');
+        const today = getLogicalDate(); // Use logical date
         
         onValue(ref(db, 'employees'), (snapshot) => {
             let totalMap = {};
@@ -710,14 +758,14 @@
         const ws = XLSX.utils.json_to_sheet(exportDataBuffer);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "List");
-        const fileName = `${document.getElementById("detailListTitle").innerText}_${new Date().toLocaleDateString('en-CA')}.xlsx`;
+        const fileName = `${document.getElementById("detailListTitle").innerText}_${getLogicalDate()}.xlsx`;
         XLSX.writeFile(wb, fileName);
     });
 
     // --- History View ---
     document.getElementById("goToHistoryBtn").addEventListener("click", () => {
         hideAllSections(); secHistory.classList.remove("hidden");
-        document.getElementById("historyDate").value = new Date().toLocaleDateString('en-CA');
+        document.getElementById("historyDate").value = getLogicalDate();
         fetchHistory();
     });
     document.getElementById("fetchHistoryBtn").addEventListener("click", fetchHistory);
