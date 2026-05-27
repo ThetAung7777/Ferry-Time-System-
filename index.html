@@ -6,94 +6,148 @@
     <title>Agency Shuttle Time System</title>
     <style>
         * { box-sizing: border-box; font-family: sans-serif; }
-        body { background-color: #f4f6f9; padding: 20px; display: block; margin: 0; }
-        .container { max-width: 600px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        body { background-color: #f4f6f9; padding: 0; margin: 0; }
+        
+        /* Top Navigation Bar */
+        .navbar { background-color: #007bff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .navbar h2 { margin: 0; font-size: 20px; }
+        .settings-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
+        
+        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2.section-title { text-align: center; color: #333; margin-bottom: 20px; }
+        
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
         input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
         button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         button:hover { background-color: #0056b3; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         
         /* User Form Styles */
         .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .time-btn { padding: 12px; background: #e9ecef; border: 2px solid transparent; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; }
         .time-btn.selected { background: #d4edda; border-color: #28a745; color: #155724; }
         .custom-time-box { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; }
-        .logout-btn { background-color: #6c757d; margin-top: 20px; }
         
         /* Admin Dashboard Styles */
         .admin-section-box { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
         .btn-add { background-color: #28a745; }
         .btn-add:hover { background-color: #218838; }
-        .btn-remove { background-color: #dc3545; }
-        .btn-remove:hover { background-color: #c82333; }
-        .admin-title { border-bottom: 2px solid #ddd; padding-bottom: 10px; color: #17a2b8; text-align: center;}
+        .logout-btn { background-color: #dc3545; margin-top: 30px; }
+        .logout-btn:hover { background-color: #c82333; }
         
         /* Dashboard Stats */
         .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
         .stat-box { flex: 1; background: #e9ecef; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
-        .stat-box:hover { background: #dee2e6; }
         .stat-box h3 { margin: 0 0 5px 0; font-size: 24px; color: #007bff; }
         .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #555; }
+        
+        .setup-alert { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<nav class="navbar">
+    <h2 id="navTitle">Login</h2>
+    <button class="settings-btn" id="navSettingsBtn">⚙️</button>
+</nav>
+
+<div class="container" id="loginSection">
+    <h2 class="section-title">စနစ်ထဲသို့ ဝင်ရန်</h2>
+    <div class="form-group">
+        <label for="empId">Employee ID ရိုက်ထည့်ပါ</label>
+        <input type="text" id="empId" placeholder="ဥပမာ - 29501564 (သို့) Admin ID">
+    </div>
+    <button id="loginBtn">ဝင်မည်</button>
+</div>
+
+<div class="container hidden" id="setupSection">
+    <h2 class="section-title">ကိုယ်ရေးအချက်အလက် ဖြည့်သွင်းရန်</h2>
+    <div class="setup-alert">သင်၏ Agency နှင့် အဆောင်အမည်ကို ပထမဆုံးအကြိမ် ရွေးချယ်ပေးရန် လိုအပ်ပါသည်။ နောက်ပိုင်းတွင် ⚙️ Settings မှ ပြန်ပြင်နိုင်ပါသည်။</div>
     
-    <div id="loginSection">
-        <h2>ဝန်ထမ်း Login</h2>
-        <div class="form-group">
-            <label for="empId">ID ရိုက်ထည့်ပါ (Admin အတွက် ADMIN001)</label>
-            <input type="text" id="empId" placeholder="ဥပမာ - 29501564 သို့မဟုတ် ADMIN001">
-        </div>
-        <button id="loginBtn">စနစ်ထဲသို့ဝင်ရန်</button>
+    <div class="form-group">
+        <label>Agency ရွေးချယ်ပါ</label>
+        <select id="userAgency">
+            <option value="">-- ရွေးချယ်ပါ --</option>
+            <option value="SPT Agency">SPT Agency</option>
+            <option value="MMD Agency">MMD Agency</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>နေထိုင်သည့် အဆောင် (Dormitory) ရွေးချယ်ပါ</label>
+        <select id="userDorm">
+            <option value="">-- ရွေးချယ်ပါ --</option>
+            <option value="ဘွန်နခွန် BN တိုက်">ဘွန်နခွန် BN တိုက်</option>
+            <option value="ဖန်ထောင် P တိုက်">ဖန်ထောင် P တိုက်</option>
+            <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
+        </select>
+    </div>
+    <button id="saveSetupBtn" style="background-color: #28a745;">မှတ်သားပြီး ရှေ့ဆက်မည်</button>
+</div>
+
+<div class="container hidden" id="formSection">
+    <h2 class="section-title">အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
+    <p style="text-align: center; font-weight: bold; color: #555;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
+    
+    <div class="form-group">
+        <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
+        <div id="timeOptionsContainer" class="time-options"></div>
     </div>
 
-    <div id="formSection" class="hidden">
-        <h2>အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
-        <p style="text-align: center; font-weight: bold; color: #555;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
-        
-        <div class="form-group">
-            <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
-            <div id="timeOptionsContainer" class="time-options"></div>
-        </div>
-
-        <div id="customTimeSection" class="form-group hidden custom-time-box">
-            <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
-            <input type="time" id="customTime">
-        </div>
-
-        <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
-        <button id="userLogoutBtn" class="logout-btn">အကောင့်ထွက်မည် (Logout)</button>
+    <div id="customTimeSection" class="form-group hidden custom-time-box">
+        <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
+        <input type="time" id="customTime">
     </div>
 
-    <div id="adminSection" class="hidden">
-        <h2 class="admin-title">Admin Management Panel</h2>
+    <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+</div>
 
+<div class="container hidden" id="adminSection">
+    <h2 class="section-title">ယနေ့ စာရင်း အကျဉ်းချုပ်</h2>
+    <div class="stats-container">
+        <div class="stat-box" id="statTotal">
+            <h3 id="countTotal">0</h3>
+            <p>စုစုပေါင်း</p>
+        </div>
+        <div class="stat-box" id="statSubmitted">
+            <h3 id="countSubmitted" style="color: #28a745;">0</h3>
+            <p>ဖြည့်ပြီး</p>
+        </div>
+        <div class="stat-box" id="statRemaining">
+            <h3 id="countRemaining" style="color: #dc3545;">0</h3>
+            <p>ကျန်ရှိ</p>
+        </div>
+    </div>
+</div>
+
+<div class="container hidden" id="settingsSection">
+    <h2 class="section-title">Settings & Menu</h2>
+    
+    <div id="userSettingsDiv" class="hidden">
         <div class="admin-section-box">
-            <h3 style="color: #007bff; margin-top: 0;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
-            <div class="stats-container">
-                <div class="stat-box" id="statTotal">
-                    <h3 id="countTotal">0</h3>
-                    <p>စုစုပေါင်း</p>
-                </div>
-                <div class="stat-box" id="statSubmitted">
-                    <h3 id="countSubmitted" style="color: #28a745;">0</h3>
-                    <p>ဖြည့်ပြီး</p>
-                </div>
-                <div class="stat-box" id="statRemaining">
-                    <h3 id="countRemaining" style="color: #dc3545;">0</h3>
-                    <p>ကျန်ရှိ</p>
-                </div>
+            <h3 style="color: #17a2b8; margin-top: 0;">အချက်အလက်များ ပြင်ဆင်ရန်</h3>
+            <div class="form-group">
+                <label>Agency</label>
+                <select id="editUserAgency">
+                    <option value="SPT Agency">SPT Agency</option>
+                    <option value="MMD Agency">MMD Agency</option>
+                </select>
             </div>
+            <div class="form-group">
+                <label>နေထိုင်သည့် အဆောင်</label>
+                <select id="editUserDorm">
+                    <option value="ဘွန်နခွန် BN တိုက်">ဘွန်နခွန် BN တိုက်</option>
+                    <option value="ဖန်ထောင် P တိုက်">ဖန်ထောင် P တိုက်</option>
+                    <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
+                </select>
             </div>
+            <button id="updateProfileBtn" style="background-color: #28a745;">ပြောင်းလဲမှုကို သိမ်းမည်</button>
+        </div>
+    </div>
 
+    <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
             <h3 style="color: #17a2b8; margin-top: 0;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
-            <p style="font-size: 12px; color: #666; margin-top: -10px;">ID, Name, Shift, Department ခေါင်းစဉ်များဖြင့် CSV ဖိုင်ကို အသုံးပြုပါ။</p>
             <input type="file" id="csvFileInput" accept=".csv">
             <button class="btn-add" id="uploadCsvBtn" style="background-color: #17a2b8;">CSV ဖိုင် တင်မည်</button>
         </div>
@@ -102,15 +156,15 @@
             <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းတစ်ဦးချင်း ထည့်ရန်</h3>
             <div class="form-group">
                 <label>Employee ID</label>
-                <input type="text" id="newEmpId" placeholder="ဥပမာ - 29501564">
+                <input type="text" id="newEmpId">
             </div>
             <div class="form-group">
                 <label>ဝန်ထမ်းအမည်</label>
-                <input type="text" id="newEmpName" placeholder="ဥပမာ - THET AUNG">
+                <input type="text" id="newEmpName">
             </div>
              <div class="form-group">
                 <label>ဌာန (Department)</label>
-                <input type="text" id="newEmpDept" placeholder="ဥပမာ - SMT">
+                <input type="text" id="newEmpDept">
             </div>
             <div class="form-group">
                 <label>အလုပ်ဆိုင်း (Shift)</label>
@@ -121,17 +175,17 @@
             </div>
             <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
         </div>
-
-        <button id="adminLogoutBtn" class="logout-btn" style="width: 100%;">အကောင့်ထွက်မည် (Logout)</button>
     </div>
 
+    <button id="closeSettingsBtn" style="background-color: #6c757d;">နောက်သို့ ပြန်သွားမည်</button>
+    <button class="logout-btn" id="logoutBtn">အကောင့်ထွက်မည် (Logout)</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCsKoGsSo6tOHeX2xbszgj_oyZAqt5DlD0",
@@ -145,14 +199,28 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const ADMIN_ID = "ADMIN001";
+    
+    // Admins သတ်မှတ်ခြင်း
+    const ADMIN_IDS = ["SPTKYAWPHYO01", "MMDTIYA001"];
 
     let currentEmpId = "";
     let currentEmpData = null;
     let selectedTime = "";
+    let isAdmin = false;
 
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
+
+    // Sections
+    const secLogin = document.getElementById("loginSection");
+    const secSetup = document.getElementById("setupSection");
+    const secForm = document.getElementById("formSection");
+    const secAdmin = document.getElementById("adminSection");
+    const secSettings = document.getElementById("settingsSection");
+    
+    // UI Elements
+    const navTitle = document.getElementById("navTitle");
+    const navSettingsBtn = document.getElementById("navSettingsBtn");
 
     // ==========================================
     // 1. Initialization & Login
@@ -168,22 +236,32 @@
         checkLogin(idInput);
     });
 
-    const logout = () => {
+    document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.removeItem("savedEmpId");
         location.reload();
-    };
-    document.getElementById("userLogoutBtn").addEventListener("click", logout);
-    document.getElementById("adminLogoutBtn").addEventListener("click", logout);
+    });
+
+    function hideAllSections() {
+        secLogin.classList.add("hidden");
+        secSetup.classList.add("hidden");
+        secForm.classList.add("hidden");
+        secAdmin.classList.add("hidden");
+        secSettings.classList.add("hidden");
+    }
 
     async function checkLogin(empId) {
-        if (empId === ADMIN_ID) {
+        if (ADMIN_IDS.includes(empId)) {
+            isAdmin = true;
             localStorage.setItem("savedEmpId", empId);
-            document.getElementById("loginSection").classList.add("hidden");
-            document.getElementById("adminSection").classList.remove("hidden");
-            loadDashboardStats(); // Load stats when admin logs in
+            navTitle.innerText = "Ferry Time System";
+            navSettingsBtn.style.display = "block";
+            hideAllSections();
+            secAdmin.classList.remove("hidden");
+            loadDashboardStats();
             return;
         }
 
+        isAdmin = false;
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
         
@@ -191,7 +269,16 @@
             currentEmpId = empId;
             currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
-            showFormPage();
+            navTitle.innerText = "Ferry Time Table";
+            navSettingsBtn.style.display = "block";
+            
+            // Check if user has Agency and Dormitory saved
+            if (!currentEmpData.agency || !currentEmpData.dormitory) {
+                hideAllSections();
+                secSetup.classList.remove("hidden");
+            } else {
+                showFormPage();
+            }
         } else {
             alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။");
             localStorage.removeItem("savedEmpId");
@@ -199,11 +286,61 @@
     }
 
     // ==========================================
-    // 2. User Form Actions
+    // 2. Setup & Settings Navigation
+    // ==========================================
+    document.getElementById("saveSetupBtn").addEventListener("click", async () => {
+        const agency = document.getElementById("userAgency").value;
+        const dorm = document.getElementById("userDorm").value;
+        if (!agency || !dorm) return alert("Agency နှင့် အဆောင်ကို ရွေးချယ်ပေးပါ။");
+
+        await update(ref(db, 'employees/' + currentEmpId), { agency: agency, dormitory: dorm });
+        currentEmpData.agency = agency;
+        currentEmpData.dormitory = dorm;
+        showFormPage();
+    });
+
+    navSettingsBtn.addEventListener("click", () => {
+        hideAllSections();
+        secSettings.classList.remove("hidden");
+        navTitle.innerText = "Settings";
+        
+        if (isAdmin) {
+            document.getElementById("adminSettingsDiv").classList.remove("hidden");
+            document.getElementById("userSettingsDiv").classList.add("hidden");
+        } else {
+            document.getElementById("userSettingsDiv").classList.remove("hidden");
+            document.getElementById("adminSettingsDiv").classList.add("hidden");
+            document.getElementById("editUserAgency").value = currentEmpData.agency || "SPT Agency";
+            document.getElementById("editUserDorm").value = currentEmpData.dormitory || "ဘွန်နခွန် BN တိုက်";
+        }
+    });
+
+    document.getElementById("closeSettingsBtn").addEventListener("click", () => {
+        hideAllSections();
+        if (isAdmin) {
+            secAdmin.classList.remove("hidden");
+            navTitle.innerText = "Ferry Time System";
+        } else {
+            showFormPage();
+        }
+    });
+
+    document.getElementById("updateProfileBtn").addEventListener("click", async () => {
+        const agency = document.getElementById("editUserAgency").value;
+        const dorm = document.getElementById("editUserDorm").value;
+        await update(ref(db, 'employees/' + currentEmpId), { agency: agency, dormitory: dorm });
+        currentEmpData.agency = agency;
+        currentEmpData.dormitory = dorm;
+        alert("အချက်အလက်များ ပြင်ဆင်ပြီးပါပြီ။");
+    });
+
+    // ==========================================
+    // 3. User Form Actions
     // ==========================================
     function showFormPage() {
-        document.getElementById("loginSection").classList.add("hidden");
-        document.getElementById("formSection").classList.remove("hidden");
+        hideAllSections();
+        secForm.classList.remove("hidden");
+        navTitle.innerText = "Ferry Time Table";
         document.getElementById("empNameDisplay").innerText = currentEmpData.name + " (" + currentEmpId + ")";
         
         const slots = currentEmpData.shift === "day" ? daySlots : nightSlots;
@@ -233,7 +370,6 @@
     document.getElementById("submitBtn").addEventListener("click", async () => {
         let finalTime = selectedTime;
         if (!finalTime) return alert("ကျေးဇူးပြု၍ ပြန်မည့်အချိန် ရွေးချယ်ပေးပါဦး။");
-
         if (finalTime === "custom") {
             const customVal = document.getElementById("customTime").value;
             if(!customVal) return alert("ကိုယ်တိုင်ပြန်မည့် အချိန်ကို ဖြည့်ပေးပါ။");
@@ -245,19 +381,18 @@
 
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
             time: finalTime,
-            name: currentEmpData.name, // Save name for easier report generation
+            name: currentEmpData.name,
             dept: currentEmpData.dept || "",
+            agency: currentEmpData.agency,
+            dormitory: currentEmpData.dormitory,
             submittedAt: timeNow
         });
-
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
     });
 
     // ==========================================
-    // 3. Admin Actions (Upload & Stats)
+    // 4. Admin Actions (Upload & Stats)
     // ==========================================
-    
-    // တစ်ယောက်ချင်း ထည့်ခြင်း
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
@@ -266,86 +401,54 @@
 
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
 
-        await set(ref(db, 'employees/' + empId), {
-            name: empName,
-            dept: empDept,
-            shift: empShift
-        });
+        await set(ref(db, 'employees/' + empId), { name: empName, dept: empDept, shift: empShift });
         alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
         document.getElementById("newEmpId").value = "";
         document.getElementById("newEmpName").value = "";
         document.getElementById("newEmpDept").value = "";
     });
 
-    // CSV ဖြင့် အစုလိုက် တင်ခြင်း (PapaParse အသုံးပြု၍)
     document.getElementById("uploadCsvBtn").addEventListener("click", () => {
         const fileInput = document.getElementById("csvFileInput");
-        if (fileInput.files.length === 0) {
-            return alert("ကျေးဇူးပြု၍ CSV ဖိုင် ရွေးချယ်ပါ။");
-        }
+        if (fileInput.files.length === 0) return alert("ကျေးဇူးပြု၍ CSV ဖိုင် ရွေးချယ်ပါ။");
 
-        const file = fileInput.files[0];
-        
-        Papa.parse(file, {
-            header: true, // ပထမကြောင်းကို ခေါင်းစဉ်အဖြစ် သတ်မှတ်ရန်
-            skipEmptyLines: true,
+        Papa.parse(fileInput.files[0], {
+            header: true, skipEmptyLines: true,
             complete: async function(results) {
                 const data = results.data;
                 let successCount = 0;
-
                 for (let i = 0; i < data.length; i++) {
                     const row = data[i];
-                    // Excel မှ ခေါင်းစဉ်များ (ID, Name, Shift, Department)
                     const id = row["ID"] ? row["ID"].trim().toUpperCase() : null;
-                    const name = row["Name"] ? row["Name"].trim() : "Unknown";
-                    const shift = row["Shift"] ? row["Shift"].trim().toLowerCase() : "day";
-                    const dept = row["Department"] ? row["Department"].trim() : "";
-
                     if (id) {
-                        // Firebase သို့ အစုလိုက် ပို့ခြင်း
                         await set(ref(db, 'employees/' + id), {
-                            name: name,
-                            shift: shift,
-                            dept: dept
+                            name: row["Name"] ? row["Name"].trim() : "Unknown",
+                            shift: row["Shift"] ? row["Shift"].trim().toLowerCase() : "day",
+                            dept: row["Department"] ? row["Department"].trim() : ""
                         });
                         successCount++;
                     }
                 }
                 alert(`ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`);
-                fileInput.value = ""; // ဖိုင်ရွေးထားသည်ကို ရှင်းရန်
-                loadDashboardStats(); // စာရင်းကို ပြန် Update လုပ်ရန်
-            },
-            error: function(error) {
-                alert("CSV ဖိုင် ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။");
-                console.error(error);
+                fileInput.value = "";
+                loadDashboardStats();
             }
         });
     });
 
-    // Dashboard Data ရယူခြင်း
     function loadDashboardStats() {
+        if(!isAdmin) return;
         const today = new Date().toLocaleDateString('en-CA');
-        
         const empRef = ref(db, 'employees');
         const subRef = ref(db, `submissions/${today}`);
 
-        // Get total employees
         onValue(empRef, (snapshot) => {
-            let total = 0;
-            if (snapshot.exists()) {
-                total = Object.keys(snapshot.val()).length;
-            }
+            let total = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
             document.getElementById("countTotal").innerText = total;
             
-            // Get submitted count after knowing total
             onValue(subRef, (subSnapshot) => {
-                let submitted = 0;
-                if (subSnapshot.exists()) {
-                    submitted = Object.keys(subSnapshot.val()).length;
-                }
+                let submitted = subSnapshot.exists() ? Object.keys(subSnapshot.val()).length : 0;
                 document.getElementById("countSubmitted").innerText = submitted;
-                
-                // Calculate remaining
                 let remaining = total - submitted;
                 document.getElementById("countRemaining").innerText = remaining >= 0 ? remaining : 0;
             });
