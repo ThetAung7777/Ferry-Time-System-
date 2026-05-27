@@ -5,54 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agency Shuttle Time System</title>
     <style>
-        * { box-sizing: border-box; font-family: sans-serif; }
-        body { background-color: #f4f6f9; padding: 0; margin: 0; }
+        /* Modern & Beautiful UI Styles */
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 0; margin: 0; min-height: 100vh; }
         
         /* Navbar */
-        .navbar { background-color: #007bff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .navbar h2 { margin: 0; font-size: 18px; }
-        .settings-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none; }
+        .navbar { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; padding: 15px 20px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .navbar h2 { margin: 0; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); letter-spacing: 0.5px; }
         
-        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2.section-title { text-align: center; color: #333; margin-bottom: 20px; }
+        /* Small Settings Btn on top right */
+        .settings-btn { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; display: none; position: absolute; right: 15px; top: 12px; padding: 5px 8px; border-radius: 50%; transition: background 0.3s; }
+        .settings-btn:hover { background: rgba(255,255,255,0.4); }
         
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button:hover { background-color: #0056b3; }
+        .container { max-width: 500px; margin: 30px auto; background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); }
+        h2.section-title { text-align: center; color: #333; margin-bottom: 25px; font-size: 22px; font-weight: bold; border-bottom: 2px solid #007bff; display: inline-block; left: 50%; transform: translateX(-50%); position: relative; padding-bottom: 5px; }
+        
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 15px; }
+        input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
+        input[type="text"]:focus, input[type="time"]:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+        
+        /* Beautiful Gradient Buttons */
+        button { width: 100%; padding: 13px; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: transform 0.1s, box-shadow 0.2s; background: linear-gradient(45deg, #007bff, #00c6ff); box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+        button:hover { box-shadow: 0 6px 15px rgba(0,123,255,0.4); }
+        button:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(0,123,255,0.3); }
         .hidden { display: none !important; }
         
         /* User Form Styles */
-        .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .time-btn { padding: 12px; background: #e9ecef; border: 2px solid transparent; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; }
-        .time-btn.selected { background: #d4edda; border-color: #28a745; color: #155724; }
-        .custom-time-box { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; }
+        .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .time-btn { padding: 15px; background: #f0f2f5; border: 2px solid transparent; border-radius: 12px; text-align: center; cursor: pointer; font-weight: bold; transition: all 0.2s; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .time-btn:hover { background: #e1e5eb; }
+        .time-btn.selected { background: linear-gradient(45deg, #28a745, #8bc34a); color: white; border-color: #28a745; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .custom-time-box { margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #eee; }
         
         /* Success View */
-        .success-box { background-color: #d4edda; color: #155724; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; }
-        .btn-edit { background-color: #ffc107; color: #212529; }
-        .btn-edit:hover { background-color: #e0a800; }
+        .success-box { background: linear-gradient(135deg, #d4edda 0%, #a3cfbb 100%); color: #155724; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #c3e6cb; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-edit { background: linear-gradient(45deg, #ffc107, #ff9800); color: #212529; box-shadow: 0 4px 10px rgba(255,193,7,0.3); }
+        .btn-edit:hover { box-shadow: 0 6px 15px rgba(255,193,7,0.4); }
         
         /* Admin Dashboard Styles */
-        .admin-section-box { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
-        .btn-add { background-color: #28a745; }
-        .btn-add:hover { background-color: #218838; }
-        .logout-btn { background-color: #dc3545; margin-top: 30px; }
-        .logout-btn:hover { background-color: #c82333; }
+        .admin-section-box { margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+        .btn-add { background: linear-gradient(45deg, #28a745, #8bc34a); box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .logout-btn { background: linear-gradient(45deg, #dc3545, #ff6b6b); margin-top: 30px; box-shadow: 0 4px 10px rgba(220,53,69,0.3); }
         
-        /* Dashboard Stats & Breakdown */
-        .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-        .stat-box { flex: 1; background: #e9ecef; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #ddd; }
-        .stat-box h3 { margin: 0 0 5px 0; font-size: 24px; color: #007bff; }
-        .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #555; }
+        /* Dashboard Stats */
+        .stats-container { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
+        .stat-box { flex: 1; background: white; padding: 20px; text-align: center; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 28px; color: #007bff; font-weight: bold; }
+        .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #666; text-transform: uppercase; letter-spacing: 1px; }
         
-        .breakdown-dorm { margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-        .breakdown-dorm h4 { color: #d81b60; margin: 0 0 8px 0; font-size: 16px; }
-        .breakdown-row { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 5px; padding: 5px; background: #fff; border-radius: 4px; border: 1px solid #eee; }
+        /* Breakdown styles */
+        .breakdown-dorm { margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .breakdown-dorm h4 { color: #d81b60; margin: 0 0 10px 0; font-size: 17px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .breakdown-row { display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 7px; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
         
-        .setup-alert { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
-        .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 2px 8px; border-radius: 12px; font-size: 12px; vertical-align: middle; margin-left: 10px; }
+        .setup-alert { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 18px; font-size: 14px; text-align: center; border: 1px solid #ffeeba; }
+        .agency-badge { display: inline-block; background: #ffeb3b; color: #333; padding: 3px 10px; border-radius: 12px; font-size: 13px; vertical-align: middle; margin-left: 10px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -63,7 +71,7 @@
 </nav>
 
 <div class="container" id="loginSection">
-    <h2 class="section-title">စနစ်ထဲသို့ ဝင်ရန်</h2>
+    <h2 class="section-title">ကားစာရင်းပို့ရန် အကောင့်ဝင်မည်</h2>
     <div class="form-group">
         <label for="empId">Employee ID ရိုက်ထည့်ပါ</label>
         <input type="text" id="empId" placeholder="ဥပမာ - 29501564 (သို့) Admin ID">
@@ -92,16 +100,16 @@
             <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
         </select>
     </div>
-    <button id="saveSetupBtn" style="background-color: #28a745;">မှတ်သားပြီး ရှေ့ဆက်မည်</button>
+    <button id="saveSetupBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">မှတ်သားပြီး ရှေ့ဆက်မည်</button>
 </div>
 
 <div class="container hidden" id="formSection">
     <h2 class="section-title">အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
-    <p style="text-align: center; font-weight: bold; color: #555;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
+    <p style="text-align: center; font-weight: bold; color: #555; margin-top: 0;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
     
     <div id="successView" class="success-box hidden">
-        <h3 style="margin-top: 0;">✅ အောင်မြင်စွာ တင်ပြီးပါပြီ</h3>
-        <p>ယနေ့အတွက် သင်ရွေးချယ်ထားသော အချိန်:<br><strong id="displaySubTime" style="font-size: 20px; color: #0056b3;"></strong></p>
+        <h3 style="margin-top: 0; font-size: 18px;">✅ အောင်မြင်စွာ တင်ပြီးပါပြီ</h3>
+        <p style="margin: 10px 0;">ယနေ့အတွက် သင်ရွေးချယ်ထားသော အချိန်:<br><strong id="displaySubTime" style="font-size: 24px; color: #155724;"></strong></p>
         <button id="editTimeBtn" class="btn-edit">ကားအချိန် ပြင်ဆင်ရန် (Edit)</button>
     </div>
 
@@ -116,20 +124,20 @@
             <input type="time" id="customTime">
         </div>
 
-        <div id="reasonSection" class="form-group hidden" style="background: #fff3cd; padding: 10px; border-radius: 6px;">
-            <label style="color: #dc3545;">* အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်း (မဖြစ်မနေထည့်ပါ)</label>
+        <div id="reasonSection" class="form-group hidden" style="background: #fff3cd; padding: 15px; border-radius: 10px; border: 1px solid #ffeeba;">
+            <label style="color: #dc3545; font-size: 14px;">* အချိန်ပြောင်းလဲရသည့် အကြောင်းရင်း (မဖြစ်မနေထည့်ပါ)</label>
             <input type="text" id="editReason" placeholder="ဥပမာ - OT ဆင်းရသဖြင့်">
         </div>
 
-        <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+        <button id="submitBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">Submit တင်မည်</button>
     </div>
 </div>
 
-<div class="container hidden" id="adminSection">
-    <h2 class="section-title">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
+<div class="container hidden" id="adminSection" style="max-width: 650px;">
+    <h2 class="section-title" style="border-bottom-color: #ffeb3b;">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
 
     <div class="admin-section-box">
-        <h3 style="color: #007bff; margin-top: 0;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
+        <h3 style="color: #007bff; margin-top: 0; font-size: 18px; text-align: center;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
         <div class="stats-container">
             <div class="stat-box"><h3 id="countTotal">0</h3><p>စုစုပေါင်း</p></div>
             <div class="stat-box"><h3 id="countSubmitted" style="color: #28a745;">0</h3><p>ဖြည့်ပြီး</p></div>
@@ -137,8 +145,8 @@
         </div>
     </div>
 
-    <div class="admin-section-box" style="background: #e8f4f8;">
-        <h3 style="color: #17a2b8; margin-top: 0;">🚌 အဆောင် နှင့် အချိန်အလိုက် စာရင်း</h3>
+    <div class="admin-section-box" style="background: #f0f9ff; border-color: #bde0fe;">
+        <h3 style="color: #0369a1; margin-top: 0; font-size: 18px; text-align: center;">🚌 အဆောင် နှင့် အချိန်အလိုက် စာရင်း</h3>
         <div id="breakdownContent">
             <p style="text-align: center; color: #777;">စာရင်း တွက်ချက်နေပါသည်...</p>
         </div>
@@ -150,7 +158,7 @@
     
     <div id="userSettingsDiv" class="hidden">
         <div class="admin-section-box">
-            <h3 style="color: #17a2b8; margin-top: 0;">အချက်အလက်များ ပြင်ဆင်ရန်</h3>
+            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">အချက်အလက်များ ပြင်ဆင်ရန်</h3>
             <div class="form-group">
                 <label>Agency</label>
                 <select id="editUserAgency">
@@ -166,19 +174,19 @@
                     <option value="ဖန်ထောင် PP တိုက်">ဖန်ထောင် PP တိုက်</option>
                 </select>
             </div>
-            <button id="updateProfileBtn" style="background-color: #28a745;">ပြောင်းလဲမှုကို သိမ်းမည်</button>
+            <button id="updateProfileBtn" style="background: linear-gradient(45deg, #28a745, #8bc34a);">ပြောင်းလဲမှုကို သိမ်းမည်</button>
         </div>
     </div>
 
     <div id="adminSettingsDiv" class="hidden">
         <div class="admin-section-box">
-            <h3 style="color: #17a2b8; margin-top: 0;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
-            <input type="file" id="csvFileInput" accept=".csv">
-            <button class="btn-add" id="uploadCsvBtn" style="background-color: #17a2b8;">CSV ဖိုင် တင်မည်</button>
+            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
+            <input type="file" id="csvFileInput" accept=".csv" style="padding: 10px; background: white;">
+            <button class="btn-add" id="uploadCsvBtn">CSV ဖိုင် တင်မည်</button>
         </div>
 
         <div class="admin-section-box">
-            <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းတစ်ဦးချင်း ထည့်ရန်</h3>
+            <h3 style="color: #28a745; margin-top: 0; font-size: 18px;">➕ ဝန်ထမ်းတစ်ဦးချင်း ထည့်ရန်</h3>
             <div class="form-group"><label>Employee ID</label><input type="text" id="newEmpId"></div>
             <div class="form-group"><label>ဝန်ထမ်းအမည်</label><input type="text" id="newEmpName"></div>
             <div class="form-group"><label>ဌာန (Department)</label><input type="text" id="newEmpDept"></div>
@@ -193,7 +201,7 @@
         </div>
     </div>
 
-    <button id="closeSettingsBtn" style="background-color: #6c757d;">နောက်သို့ ပြန်သွားမည်</button>
+    <button id="closeSettingsBtn" style="background: linear-gradient(45deg, #6c757d, #adb5bd);">နောက်သို့ ပြန်သွားမည်</button>
     <button class="logout-btn" id="logoutBtn">အကောင့်ထွက်မည် (Logout)</button>
 </div>
 
@@ -227,8 +235,7 @@
     let selectedTime = "";
     let isAdmin = false;
     let adminAgency = "";
-    
-    let isEditing = false; // To track if user is editing their submission
+    let isEditing = false; 
 
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
@@ -275,6 +282,7 @@
             isAdmin = true;
             adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
+            // Beautiful Header after login
             navTitle.innerText = "Ferry Time System";
             navSettingsBtn.style.display = "block";
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
@@ -293,6 +301,7 @@
             currentEmpId = empId;
             currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
+            // Beautiful Header after login
             navTitle.innerText = "Ferry Time Table";
             navSettingsBtn.style.display = "block";
             
@@ -330,7 +339,7 @@
     navSettingsBtn.addEventListener("click", () => {
         hideAllSections();
         secSettings.classList.remove("hidden");
-        navTitle.innerText = "Settings";
+        navTitle.innerText = "Settings Menu";
         
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
@@ -364,7 +373,7 @@
     });
 
     // ==========================================
-    // 3. User Form Actions (Success / Edit Logic)
+    // 3. User Form Actions
     // ==========================================
     async function checkTodaySubmission() {
         hideAllSections();
@@ -376,26 +385,24 @@
         const snapshot = await get(subRef);
         
         if(snapshot.exists()) {
-            // Already submitted today
             isEditing = true;
             document.getElementById("successView").classList.remove("hidden");
             document.getElementById("timeSelectionDiv").classList.add("hidden");
             document.getElementById("displaySubTime").innerText = snapshot.val().time;
         } else {
-            // First time submit today
             isEditing = false;
             document.getElementById("successView").classList.add("hidden");
             document.getElementById("timeSelectionDiv").classList.remove("hidden");
-            document.getElementById("reasonSection").classList.add("hidden"); // Hide reason for first submit
+            document.getElementById("reasonSection").classList.add("hidden"); 
             renderTimeOptions();
         }
     }
     
-    // User clicks "Edit Time"
     document.getElementById("editTimeBtn").addEventListener("click", () => {
         document.getElementById("successView").classList.add("hidden");
         document.getElementById("timeSelectionDiv").classList.remove("hidden");
-        document.getElementById("reasonSection").classList.remove("hidden"); // Show reason box
+        document.getElementById("reasonSection").classList.remove("hidden"); 
+        document.getElementById("editReason").value = ""; // Clear old reason
         renderTimeOptions();
     });
 
@@ -403,7 +410,7 @@
         const slots = currentEmpData.shift === "day" ? daySlots : nightSlots;
         const container = document.getElementById("timeOptionsContainer");
         container.innerHTML = "";
-        selectedTime = ""; // Reset selection
+        selectedTime = ""; 
 
         slots.forEach(slot => {
             const btn = document.createElement("div");
@@ -453,11 +460,11 @@
         });
         
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
-        checkTodaySubmission(); // Reload UI to show success box
+        checkTodaySubmission(); 
     });
 
     // ==========================================
-    // 4. Admin Dashboard (Separated by Agency)
+    // 4. Admin Dashboard 
     // ==========================================
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
@@ -493,7 +500,7 @@
                             name: row["Name"] ? row["Name"].trim() : "Unknown",
                             shift: row["Shift"] ? row["Shift"].trim().toLowerCase() : "day",
                             dept: row["Department"] ? row["Department"].trim() : "",
-                            agency: adminAgency // Force auto-assign to this admin's agency
+                            agency: adminAgency 
                         });
                         successCount++;
                     }
@@ -510,7 +517,6 @@
         const empRef = ref(db, 'employees');
         const subRef = ref(db, `submissions/${today}`);
 
-        // Fetch Employees
         onValue(empRef, (snapshot) => {
             let total = 0;
             if (snapshot.exists()) {
@@ -521,22 +527,18 @@
             }
             document.getElementById("countTotal").innerText = total;
             
-            // Fetch Submissions
             onValue(subRef, (subSnapshot) => {
                 let submitted = 0;
-                let breakdown = {}; // To store count per dorm & time
+                let breakdown = {}; 
 
                 if (subSnapshot.exists()) {
                     const submissions = subSnapshot.val();
                     for (let key in submissions) {
                         const sub = submissions[key];
-                        // Filter by Admin's Agency
                         if (sub.agency === adminAgency) {
                             submitted++;
-                            
                             let dorm = sub.dormitory || "မသိရသော အဆောင်";
                             let t = sub.time || "မသိရသော အချိန်";
-                            
                             if (!breakdown[dorm]) breakdown[dorm] = {};
                             if (!breakdown[dorm][t]) breakdown[dorm][t] = 0;
                             breakdown[dorm][t]++;
@@ -547,7 +549,6 @@
                 let remaining = total - submitted;
                 document.getElementById("countRemaining").innerText = remaining >= 0 ? remaining : 0;
 
-                // Render Breakdown HTML
                 let bdHtml = "";
                 for (let dorm in breakdown) {
                     bdHtml += `<div class="breakdown-dorm"><h4>🏢 ${dorm}</h4>`;
