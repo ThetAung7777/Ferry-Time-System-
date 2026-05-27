@@ -7,12 +7,12 @@
     <style>
         * { box-sizing: border-box; font-family: sans-serif; }
         body { background-color: #f4f6f9; padding: 20px; display: block; margin: 0; }
-        .container { max-width: 500px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 600px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"], input[type="time"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        input[type="text"], input[type="time"], input[type="file"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         button:hover { background-color: #0056b3; }
         .hidden { display: none; }
         
@@ -25,11 +25,18 @@
         
         /* Admin Dashboard Styles */
         .admin-section-box { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
-        .btn-add { background-color: #28a745; margin-top: 10px; }
+        .btn-add { background-color: #28a745; }
         .btn-add:hover { background-color: #218838; }
-        .btn-remove { background-color: #dc3545; margin-top: 10px; }
+        .btn-remove { background-color: #dc3545; }
         .btn-remove:hover { background-color: #c82333; }
-        .admin-title { border-bottom: 2px solid #ddd; padding-bottom: 10px; color: #17a2b8; }
+        .admin-title { border-bottom: 2px solid #ddd; padding-bottom: 10px; color: #17a2b8; text-align: center;}
+        
+        /* Dashboard Stats */
+        .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: #e9ecef; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; }
+        .stat-box:hover { background: #dee2e6; }
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 24px; color: #007bff; }
+        .stat-box p { margin: 0; font-size: 14px; font-weight: bold; color: #555; }
     </style>
 </head>
 <body>
@@ -40,7 +47,7 @@
         <h2>ဝန်ထမ်း Login</h2>
         <div class="form-group">
             <label for="empId">ID ရိုက်ထည့်ပါ (Admin အတွက် ADMIN001)</label>
-            <input type="text" id="empId" placeholder="ဥပမာ - EMP001 သို့မဟုတ် ADMIN001">
+            <input type="text" id="empId" placeholder="ဥပမာ - 29501564 သို့မဟုတ် ADMIN001">
         </div>
         <button id="loginBtn">စနစ်ထဲသို့ဝင်ရန်</button>
     </div>
@@ -67,14 +74,43 @@
         <h2 class="admin-title">Admin Management Panel</h2>
 
         <div class="admin-section-box">
-            <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းအသစ် ထည့်ရန်</h3>
+            <h3 style="color: #007bff; margin-top: 0;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
+            <div class="stats-container">
+                <div class="stat-box" id="statTotal">
+                    <h3 id="countTotal">0</h3>
+                    <p>စုစုပေါင်း</p>
+                </div>
+                <div class="stat-box" id="statSubmitted">
+                    <h3 id="countSubmitted" style="color: #28a745;">0</h3>
+                    <p>ဖြည့်ပြီး</p>
+                </div>
+                <div class="stat-box" id="statRemaining">
+                    <h3 id="countRemaining" style="color: #dc3545;">0</h3>
+                    <p>ကျန်ရှိ</p>
+                </div>
+            </div>
+            </div>
+
+        <div class="admin-section-box">
+            <h3 style="color: #17a2b8; margin-top: 0;">📁 Excel (CSV) ဖြင့် အစုလိုက် တင်ရန်</h3>
+            <p style="font-size: 12px; color: #666; margin-top: -10px;">ID, Name, Shift, Department ခေါင်းစဉ်များဖြင့် CSV ဖိုင်ကို အသုံးပြုပါ။</p>
+            <input type="file" id="csvFileInput" accept=".csv">
+            <button class="btn-add" id="uploadCsvBtn" style="background-color: #17a2b8;">CSV ဖိုင် တင်မည်</button>
+        </div>
+
+        <div class="admin-section-box">
+            <h3 style="color: #28a745; margin-top: 0;">➕ ဝန်ထမ်းတစ်ဦးချင်း ထည့်ရန်</h3>
             <div class="form-group">
                 <label>Employee ID</label>
-                <input type="text" id="newEmpId" placeholder="ဥပမာ - EMP001">
+                <input type="text" id="newEmpId" placeholder="ဥပမာ - 29501564">
             </div>
             <div class="form-group">
                 <label>ဝန်ထမ်းအမည်</label>
-                <input type="text" id="newEmpName" placeholder="ဥပမာ - Thet Aung">
+                <input type="text" id="newEmpName" placeholder="ဥပမာ - THET AUNG">
+            </div>
+             <div class="form-group">
+                <label>ဌာန (Department)</label>
+                <input type="text" id="newEmpDept" placeholder="ဥပမာ - SMT">
             </div>
             <div class="form-group">
                 <label>အလုပ်ဆိုင်း (Shift)</label>
@@ -86,25 +122,17 @@
             <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
         </div>
 
-        <div class="admin-section-box">
-            <h3 style="color: #dc3545; margin-top: 0;">🗑️ ဝန်ထမ်းစာရင်းမှ ဖျက်ရန်</h3>
-            <div class="form-group">
-                <label>ဖျက်လိုသော Employee ID ရိုက်ထည့်ပါ</label>
-                <input type="text" id="removeEmpId" placeholder="ဥပမာ - EMP001">
-            </div>
-            <button class="btn-remove" id="removeEmpBtn">ဝန်ထမ်းစာရင်းမှ ပယ်ဖျက်မည်</button>
-        </div>
-
         <button id="adminLogoutBtn" class="logout-btn" style="width: 100%;">အကောင့်ထွက်မည် (Logout)</button>
     </div>
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Update ဖြည့်သွင်းထားသော Firebase Config အစစ်
     const firebaseConfig = {
         apiKey: "AIzaSyCsKoGsSo6tOHeX2xbszgj_oyZAqt5DlD0",
         authDomain: "ferry-time-system.firebaseapp.com",
@@ -117,8 +145,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    // Admin အတွက် သတ်မှတ်ထားသော ID
     const ADMIN_ID = "ADMIN001";
 
     let currentEmpId = "";
@@ -128,12 +154,12 @@
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
-    // Auto-login Check
+    // ==========================================
+    // 1. Initialization & Login
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const savedId = localStorage.getItem("savedEmpId");
-        if (savedId) {
-            checkLogin(savedId);
-        }
+        if (savedId) checkLogin(savedId);
     });
 
     document.getElementById("loginBtn").addEventListener("click", () => {
@@ -142,7 +168,6 @@
         checkLogin(idInput);
     });
 
-    // Logout လုပ်ဆောင်ချက်များ
     const logout = () => {
         localStorage.removeItem("savedEmpId");
         location.reload();
@@ -150,17 +175,15 @@
     document.getElementById("userLogoutBtn").addEventListener("click", logout);
     document.getElementById("adminLogoutBtn").addEventListener("click", logout);
 
-    // Login စစ်ဆေးခြင်း (Admin နှင့် User ခွဲခြားခြင်း)
     async function checkLogin(empId) {
         if (empId === ADMIN_ID) {
-            // Admin ID ဖြင့် ဝင်လာပါက
             localStorage.setItem("savedEmpId", empId);
             document.getElementById("loginSection").classList.add("hidden");
             document.getElementById("adminSection").classList.remove("hidden");
+            loadDashboardStats(); // Load stats when admin logs in
             return;
         }
 
-        // ပုံမှန် ဝန်ထမ်း ID ဖြင့် ဝင်လာပါက
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
         
@@ -175,7 +198,9 @@
         }
     }
 
-    // ဝန်ထမ်းစာမျက်နှာ ပြသခြင်း
+    // ==========================================
+    // 2. User Form Actions
+    // ==========================================
     function showFormPage() {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("formSection").classList.remove("hidden");
@@ -205,7 +230,6 @@
         });
     }
 
-    // ဝန်ထမ်း - ဖောင် Submit လုပ်ခြင်း
     document.getElementById("submitBtn").addEventListener("click", async () => {
         let finalTime = selectedTime;
         if (!finalTime) return alert("ကျေးဇူးပြု၍ ပြန်မည့်အချိန် ရွေးချယ်ပေးပါဦး။");
@@ -221,54 +245,113 @@
 
         await set(ref(db, `submissions/${today}/${currentEmpId}`), {
             time: finalTime,
+            name: currentEmpData.name, // Save name for easier report generation
+            dept: currentEmpData.dept || "",
             submittedAt: timeNow
         });
 
         alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
     });
 
-    // Admin - ဝန်ထမ်းအသစ် ထည့်ခြင်း
+    // ==========================================
+    // 3. Admin Actions (Upload & Stats)
+    // ==========================================
+    
+    // တစ်ယောက်ချင်း ထည့်ခြင်း
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
         const empName = document.getElementById("newEmpName").value.trim();
+        const empDept = document.getElementById("newEmpDept").value.trim();
         const empShift = document.getElementById("newEmpShift").value;
 
         if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
 
-        try {
-            await set(ref(db, 'employees/' + empId), {
-                name: empName,
-                shift: empShift
-            });
-            alert("ဝန်ထမ်းအသစ် " + empName + " (" + empId + ") ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။");
-            document.getElementById("newEmpId").value = "";
-            document.getElementById("newEmpName").value = "";
-        } catch (error) {
-            alert("အမှားအယွင်းဖြစ်နေပါသည်။ Database Rules ကို စစ်ဆေးပါ။");
-            console.error(error);
-        }
+        await set(ref(db, 'employees/' + empId), {
+            name: empName,
+            dept: empDept,
+            shift: empShift
+        });
+        alert("ဝန်ထမ်းအသစ် ထည့်သွင်းပြီးပါပြီ။");
+        document.getElementById("newEmpId").value = "";
+        document.getElementById("newEmpName").value = "";
+        document.getElementById("newEmpDept").value = "";
     });
 
-    // Admin - ဝန်ထမ်း ဖျက်ခြင်း
-    document.getElementById("removeEmpBtn").addEventListener("click", async () => {
-        const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
+    // CSV ဖြင့် အစုလိုက် တင်ခြင်း (PapaParse အသုံးပြု၍)
+    document.getElementById("uploadCsvBtn").addEventListener("click", () => {
+        const fileInput = document.getElementById("csvFileInput");
+        if (fileInput.files.length === 0) {
+            return alert("ကျေးဇူးပြု၍ CSV ဖိုင် ရွေးချယ်ပါ။");
+        }
 
-        if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
+        const file = fileInput.files[0];
+        
+        Papa.parse(file, {
+            header: true, // ပထမကြောင်းကို ခေါင်းစဉ်အဖြစ် သတ်မှတ်ရန်
+            skipEmptyLines: true,
+            complete: async function(results) {
+                const data = results.data;
+                let successCount = 0;
 
-        const empRef = ref(db, 'employees/' + empId);
-        const snapshot = await get(empRef);
+                for (let i = 0; i < data.length; i++) {
+                    const row = data[i];
+                    // Excel မှ ခေါင်းစဉ်များ (ID, Name, Shift, Department)
+                    const id = row["ID"] ? row["ID"].trim().toUpperCase() : null;
+                    const name = row["Name"] ? row["Name"].trim() : "Unknown";
+                    const shift = row["Shift"] ? row["Shift"].trim().toLowerCase() : "day";
+                    const dept = row["Department"] ? row["Department"].trim() : "";
 
-        if (snapshot.exists()) {
-            const confirmDelete = confirm("ဤဝန်ထမ်းကို စာရင်းမှ အမှန်တကယ် ဖျက်ရန် သေချာပါသလား?");
-            if (confirmDelete) {
-                await remove(empRef);
-                alert(empId + " ကို စာရင်းမှ အောင်မြင်စွာ ပယ်ဖျက်လိုက်ပါပြီ။");
-                document.getElementById("removeEmpId").value = "";
+                    if (id) {
+                        // Firebase သို့ အစုလိုက် ပို့ခြင်း
+                        await set(ref(db, 'employees/' + id), {
+                            name: name,
+                            shift: shift,
+                            dept: dept
+                        });
+                        successCount++;
+                    }
+                }
+                alert(`ဝန်ထမ်း စုစုပေါင်း ${successCount} ဦးကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။`);
+                fileInput.value = ""; // ဖိုင်ရွေးထားသည်ကို ရှင်းရန်
+                loadDashboardStats(); // စာရင်းကို ပြန် Update လုပ်ရန်
+            },
+            error: function(error) {
+                alert("CSV ဖိုင် ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။");
+                console.error(error);
             }
-        } else {
-            alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။ စာလုံးပေါင်း မှန်ကန်မှု ရှိမရှိ ပြန်စစ်ပါ။");
-        }
+        });
     });
+
+    // Dashboard Data ရယူခြင်း
+    function loadDashboardStats() {
+        const today = new Date().toLocaleDateString('en-CA');
+        
+        const empRef = ref(db, 'employees');
+        const subRef = ref(db, `submissions/${today}`);
+
+        // Get total employees
+        onValue(empRef, (snapshot) => {
+            let total = 0;
+            if (snapshot.exists()) {
+                total = Object.keys(snapshot.val()).length;
+            }
+            document.getElementById("countTotal").innerText = total;
+            
+            // Get submitted count after knowing total
+            onValue(subRef, (subSnapshot) => {
+                let submitted = 0;
+                if (subSnapshot.exists()) {
+                    submitted = Object.keys(subSnapshot.val()).length;
+                }
+                document.getElementById("countSubmitted").innerText = submitted;
+                
+                // Calculate remaining
+                let remaining = total - submitted;
+                document.getElementById("countRemaining").innerText = remaining >= 0 ? remaining : 0;
+            });
+        });
+    }
+
 </script>
 </body>
 </html>
