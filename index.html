@@ -44,6 +44,7 @@
         .btn-action { background: linear-gradient(45deg, #6f42c1, #a370f7); margin-bottom: 10px; margin-top: 0; }
         .btn-back { background: linear-gradient(45deg, #6c757d, #adb5bd); }
         .btn-delete { background: linear-gradient(45deg, #dc3545, #ff6b6b); box-shadow: 0 4px 10px rgba(220,53,69,0.3); }
+        .btn-excel { background: linear-gradient(45deg, #20c997, #17a2b8); margin-bottom: 15px; margin-top: 0; }
         .hidden { display: none !important; }
         
         /* Time Options */
@@ -57,7 +58,10 @@
         
         .admin-section-box { margin-bottom: 25px; padding: 20px; border: 1px solid #eee; border-radius: 15px; background: #fafafa; }
         .stats-container { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-        .stat-box { flex: 1; background: white; padding: 15px; text-align: center; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        
+        /* Clickable Stat Boxes */
+        .stat-box { flex: 1; background: white; padding: 15px; text-align: center; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s; }
+        .stat-box:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); border-color: #007bff; }
         .stat-box h3 { margin: 0 0 5px 0; font-size: 26px; color: #007bff; font-weight: bold; }
         .stat-box p { margin: 0; font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; }
         
@@ -157,15 +161,15 @@
     <h2 class="section-title">Admin Dashboard <span id="adminAgencyBadge" class="agency-badge"></span></h2>
     
     <button id="goToHistoryBtn" class="btn-action">📅 နေ့စဉ် ကားစာရင်း (History)</button>
-    <button id="goToEmpListBtn" class="btn-action">👥 ဝန်ထမ်းစာရင်း ကြည့်ရန်</button>
+    <button id="goToEmpListBtn" class="btn-action">👥 ဝန်ထမ်းစာရင်း အားလုံးကြည့်ရန်</button>
     <div style="height: 15px;"></div>
 
     <div class="admin-section-box">
-        <h3 style="color: #007bff; margin-top: 0; font-size: 18px; text-align: center;">ယနေ့ စာရင်း အကျဉ်းချုပ်</h3>
+        <h3 style="color: #007bff; margin-top: 0; font-size: 18px; text-align: center;">ယနေ့ စာရင်း အကျဉ်းချုပ် (နှိပ်၍ကြည့်ပါ)</h3>
         <div class="stats-container">
-            <div class="stat-box"><h3 id="countTotal">0</h3><p>စုစုပေါင်း</p></div>
-            <div class="stat-box"><h3 id="countSubmitted" style="color: #28a745;">0</h3><p>ဖြည့်ပြီး</p></div>
-            <div class="stat-box"><h3 id="countRemaining" style="color: #dc3545;">0</h3><p>ကျန်ရှိ</p></div>
+            <div class="stat-box" id="statTotal"><h3 id="countTotal">0</h3><p>စုစုပေါင်း</p></div>
+            <div class="stat-box" id="statSubmitted"><h3 id="countSubmitted" style="color: #28a745;">0</h3><p style="color: #28a745;">ဖြည့်ပြီး</p></div>
+            <div class="stat-box" id="statRemaining"><h3 id="countRemaining" style="color: #dc3545;">0</h3><p style="color: #dc3545;">ကျန်ရှိ</p></div>
         </div>
     </div>
 
@@ -177,6 +181,13 @@
     </div>
 </div>
 
+<div class="container hidden" id="detailListSection" style="max-width: 650px;">
+    <h2 class="section-title" id="detailListTitle">စာရင်း</h2>
+    <button id="exportExcelBtn" class="btn-excel">📥 Excel ဒေါင်းလုပ်ဆွဲမည်</button>
+    <div id="detailListContent" style="max-height: 450px; overflow-y: auto; margin-bottom: 20px;"></div>
+    <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
+</div>
+
 <div class="container hidden" id="historySection" style="max-width: 650px;">
     <h2 class="section-title">ကားစာရင်း မှတ်တမ်း</h2>
     <div class="form-group">
@@ -185,12 +196,6 @@
     </div>
     <button id="fetchHistoryBtn" class="btn-add" style="margin-bottom: 20px;">ရှာဖွေမည်</button>
     <div id="historyContent"></div>
-    <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
-</div>
-
-<div class="container hidden" id="empListSection" style="max-width: 650px;">
-    <h2 class="section-title">ဝန်ထမ်းစာရင်း</h2>
-    <div id="empListContent" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div>
     <button class="btn-back go-back-dash-btn">နောက်သို့ ပြန်သွားမည်</button>
 </div>
 
@@ -275,10 +280,16 @@
     const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
     const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
 
+    // Arrays to hold data for Excel Export
+    let listTotalEmps = [];
+    let listSubmittedEmps = [];
+    let listRemainingEmps = [];
+    let exportDataBuffer = [];
+
     const secLogin = document.getElementById("loginSection"), secSetup = document.getElementById("setupSection");
     const secForm = document.getElementById("formSection"), secAdmin = document.getElementById("adminSection");
     const secSettings = document.getElementById("settingsSection"), secHistory = document.getElementById("historySection");
-    const secEmpList = document.getElementById("empListSection");
+    const secDetailList = document.getElementById("detailListSection");
     
     const navTitle = document.getElementById("navTitle");
     const profileContainer = document.getElementById("profileContainer");
@@ -317,20 +328,18 @@
     });
 
     function hideAllSections() {
-        [secLogin, secSetup, secForm, secAdmin, secSettings, secHistory, secEmpList].forEach(el => el.classList.add("hidden"));
+        [secLogin, secSetup, secForm, secAdmin, secSettings, secHistory, secDetailList].forEach(el => el.classList.add("hidden"));
     }
 
     async function checkLogin(empId) {
         if (ADMINS[empId]) {
             isAdmin = true; adminAgency = ADMINS[empId];
             localStorage.setItem("savedEmpId", empId);
-            
             navTitle.innerText = "Ferry Time System";
             profileContainer.style.display = "block";
             dropName.innerText = "Admin (" + adminAgency + ")";
             dropId.innerText = "ID: " + empId;
             document.getElementById("adminAgencyBadge").innerText = adminAgency;
-            
             hideAllSections(); secAdmin.classList.remove("hidden");
             loadDashboardStats();
             return;
@@ -341,7 +350,6 @@
         if (snapshot.exists()) {
             currentEmpId = empId; currentEmpData = snapshot.val();
             localStorage.setItem("savedEmpId", empId);
-            
             navTitle.innerText = "Ferry Time Table";
             profileContainer.style.display = "block";
             dropName.innerText = currentEmpData.name;
@@ -369,8 +377,6 @@
     document.getElementById("dropSettingsBtn").addEventListener("click", () => {
         profileDropdown.classList.remove("show");
         hideAllSections(); secSettings.classList.remove("hidden");
-        // Title မပြောင်းစေရန် Navigation Title ကို အသေထားသည်
-        
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
             document.getElementById("userSettingsDiv").classList.add("hidden");
@@ -487,28 +493,20 @@
         document.getElementById("newEmpId").value = ""; document.getElementById("newEmpName").value = "";
     });
 
-    // --- Delete Employee Logic ---
     document.getElementById("removeEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
         if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
-
         const empRef = ref(db, 'employees/' + empId);
         const snapshot = await get(empRef);
-
         if (snapshot.exists()) {
             if (snapshot.val().agency === adminAgency) {
-                const confirmDelete = confirm(`ID - ${empId} ဝန်ထမ်းကို စာရင်းမှ အပြီးအပိုင်ဖျက်ရန် သေချာပါသလား?`);
-                if (confirmDelete) {
+                if (confirm(`ID - ${empId} ကို စာရင်းမှ အပြီးအပိုင်ဖျက်ရန် သေချာပါသလား?`)) {
                     await remove(empRef);
-                    alert(`ID - ${empId} ကို စာရင်းမှ အောင်မြင်စွာ ပယ်ဖျက်လိုက်ပါပြီ။`);
+                    alert(`ID - ${empId} ကို အောင်မြင်စွာ ဖျက်လိုက်ပါပြီ။`);
                     document.getElementById("removeEmpId").value = "";
                 }
-            } else {
-                alert("ဤဝန်ထမ်းသည် သင့် Agency အောက်တွင် မရှိပါ။");
-            }
-        } else {
-            alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။ စာလုံးပေါင်း မှန်ကန်မှု ရှိမရှိ ပြန်စစ်ပါ။");
-        }
+            } else { alert("ဤဝန်ထမ်းသည် သင့် Agency အောက်တွင် မရှိပါ။"); }
+        } else { alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။"); }
     });
 
     document.getElementById("uploadExcelBtn").addEventListener("click", () => {
@@ -519,8 +517,7 @@
         const successMsg = document.getElementById("uploadSuccessMsg");
         const uploadBtn = document.getElementById("uploadExcelBtn");
         
-        loader.classList.remove("hidden");
-        successMsg.classList.add("hidden");
+        loader.classList.remove("hidden"); successMsg.classList.add("hidden");
         uploadBtn.disabled = true; uploadBtn.style.opacity = "0.5";
 
         const file = fileInput.files[0];
@@ -531,14 +528,11 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheet = workbook.SheetNames[0];
-                
-                // Read as Array of Arrays to robustly find headers anywhere
                 const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {header: 1, defval: ""});
                 
                 let headerIdx = 0;
                 for (let i = 0; i < Math.min(15, rawData.length); i++) {
                     const rowText = rawData[i].join("").toUpperCase();
-                    // ရှာဖွေရမည့် ခေါင်းစဉ်စကားလုံးများ ပါဝင်မှု စစ်ဆေးရန် (EMP, NAME)
                     if (rowText.includes("EMP") || rowText.includes("NAME") || rowText.includes("ENGLISH")) {
                         headerIdx = i; break;
                     }
@@ -554,9 +548,7 @@
                     const row = {};
                     headers.forEach((h, idx) => { row[h] = rowArray[idx]; });
 
-                    // ID ရှာရန်
                     let idKey = headers.find(k => k === 'EMP. NO.' || k === 'EMP.NO.' || k === 'ID' || k === 'EMP ID' || k === 'EMPLOYEE ID');
-                    // English Name အရင်ရှာမည်။ မရှိလျှင် Name ကို ယူမည်
                     let nameKey = headers.find(k => k.includes('ENGLISH NAME')) || headers.find(k => k.includes('ENGLISH')) || headers.find(k => k === 'EMP. NAME' || k === 'NAME' || k === 'EMP NAME');
                     let deptKey = headers.find(k => k === 'DEPT. NAME' || k === 'DEPARTMENT' || k === 'DEPT');
 
@@ -566,9 +558,7 @@
 
                     if (id && id !== "") {
                         await set(ref(db, 'employees/' + id.toUpperCase()), {
-                            name: name,
-                            dept: dept,
-                            agency: adminAgency 
+                            name: name, dept: dept, agency: adminAgency 
                         });
                         successCount++;
                     }
@@ -581,8 +571,7 @@
                 
             } catch (err) {
                 loader.classList.add("hidden");
-                alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။ ဇယားခေါင်းစဉ်များ မှန်ကန်မှုရှိမရှိ စစ်ဆေးပါ။");
-                console.error(err);
+                alert("ဖိုင်ဖတ်ရာတွင် အမှားအယွင်းရှိပါသည်။"); console.error(err);
             } finally {
                 uploadBtn.disabled = false; uploadBtn.style.opacity = "1";
                 setTimeout(() => { successMsg.classList.add("hidden"); }, 5000);
@@ -591,25 +580,38 @@
         setTimeout(() => { reader.readAsArrayBuffer(file); }, 100);
     });
 
-    // Load Dashboard Details
+    // Load Dashboard Details & Prepare Lists
     function loadDashboardStats() {
         if(!isAdmin) return;
         const today = new Date().toLocaleDateString('en-CA');
+        
         onValue(ref(db, 'employees'), (snapshot) => {
-            let total = 0;
+            let totalMap = {};
+            listTotalEmps = [];
+            
             if (snapshot.exists()) {
                 const emps = snapshot.val();
-                for (let k in emps) if (emps[k].agency === adminAgency) total++;
+                for (let k in emps) {
+                    if (emps[k].agency === adminAgency) {
+                        totalMap[k] = emps[k];
+                        listTotalEmps.push({ id: k, ...emps[k] });
+                    }
+                }
             }
-            document.getElementById("countTotal").innerText = total;
+            document.getElementById("countTotal").innerText = listTotalEmps.length;
             
             onValue(ref(db, `submissions/${today}`), (subSnapshot) => {
-                let submitted = 0; let breakdown = {}; 
+                let breakdown = {}; 
+                let subMap = {};
+                listSubmittedEmps = [];
+                
                 if (subSnapshot.exists()) {
                     const subs = subSnapshot.val();
                     for (let k in subs) {
                         if (subs[k].agency === adminAgency) {
-                            submitted++;
+                            subMap[k] = subs[k];
+                            listSubmittedEmps.push({ id: k, ...subs[k] });
+                            
                             let dorm = subs[k].dormitory || "မသိရသော အဆောင်";
                             let t = subs[k].time || "မသိရသော အချိန်";
                             if (!breakdown[dorm]) breakdown[dorm] = {};
@@ -618,10 +620,18 @@
                         }
                     }
                 }
-                document.getElementById("countSubmitted").innerText = submitted;
-                let remaining = total - submitted;
-                document.getElementById("countRemaining").innerText = remaining >= 0 ? remaining : 0;
+                document.getElementById("countSubmitted").innerText = listSubmittedEmps.length;
+                
+                // Calculate Remaining
+                listRemainingEmps = [];
+                for (let k in totalMap) {
+                    if (!subMap[k]) {
+                        listRemainingEmps.push({ id: k, ...totalMap[k] });
+                    }
+                }
+                document.getElementById("countRemaining").innerText = listRemainingEmps.length;
 
+                // Render Breakdown HTML
                 let bdHtml = "";
                 for (let dorm in breakdown) {
                     bdHtml += `<div class="breakdown-dorm"><h4>🏢 ${dorm}</h4>`;
@@ -632,6 +642,77 @@
             });
         });
     }
+
+    // ==========================================
+    // 5. Stat Box Click & Detail List Display
+    // ==========================================
+    document.getElementById("statTotal").addEventListener("click", () => showDetailList('total'));
+    document.getElementById("statSubmitted").addEventListener("click", () => showDetailList('submitted'));
+    document.getElementById("statRemaining").addEventListener("click", () => showDetailList('remaining'));
+    document.getElementById("goToEmpListBtn").addEventListener("click", () => showDetailList('total'));
+
+    function showDetailList(type) {
+        hideAllSections(); 
+        secDetailList.classList.remove("hidden");
+        const titleEl = document.getElementById("detailListTitle");
+        const contentDiv = document.getElementById("detailListContent");
+        let html = "";
+        exportDataBuffer = [];
+
+        if (type === 'submitted') {
+            titleEl.innerText = "ယနေ့ ဖြည့်ပြီးသူများ စာရင်း";
+            exportDataBuffer = listSubmittedEmps.map(e => ({
+                "ID": e.id, "Name": e.name, "Department": e.dept, "Time": e.time, "Shift": e.shift, "Dormitory": e.dormitory, "Edit Reason": e.editReason || "-"
+            }));
+            listSubmittedEmps.forEach(e => {
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #28a745;">
+                    <strong style="color: #28a745;">${e.id}</strong> - ${e.name}
+                    <div style="font-size:13px; color:#555; margin-top:4px;">
+                        ကားအချိန်: <b>${e.time}</b> | ဆိုင်း: ${e.shift==='day'?'နေ့':'ည'}<br>
+                        အဆောင်: ${e.dormitory || '-'} <br>
+                        ${e.dept ? `ဌာန: ${e.dept}` : ''}
+                    </div>
+                </div>`;
+            });
+            contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#28a745;'>စုစုပေါင်း: ${listSubmittedEmps.length} ဦး</p>` + html;
+        } 
+        else if (type === 'remaining') {
+            titleEl.innerText = "ယနေ့ မဖြည့်ရသေးသူများ စာရင်း";
+            exportDataBuffer = listRemainingEmps.map(e => ({
+                "ID": e.id, "Name": e.name, "Department": e.dept
+            }));
+            listRemainingEmps.forEach(e => {
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #dc3545;">
+                    <strong style="color: #dc3545;">${e.id}</strong> - ${e.name}
+                    <div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div>
+                </div>`;
+            });
+            contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#dc3545;'>စုစုပေါင်း: ${listRemainingEmps.length} ဦး</p>` + html;
+        } 
+        else {
+            titleEl.innerText = "စုစုပေါင်း ဝန်ထမ်းစာရင်း";
+            exportDataBuffer = listTotalEmps.map(e => ({
+                "ID": e.id, "Name": e.name, "Department": e.dept
+            }));
+            listTotalEmps.forEach(e => {
+                html += `<div class="data-card" style="padding: 10px; border-left: 4px solid #007bff;">
+                    <strong style="color: #007bff;">${e.id}</strong> - ${e.name}
+                    <div style="font-size:13px; color:#777; margin-top:4px;">${e.dept ? 'ဌာန: '+e.dept : ''}</div>
+                </div>`;
+            });
+            contentDiv.innerHTML = `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${listTotalEmps.length} ဦး</p>` + html;
+        }
+    }
+
+    // Export to Excel function
+    document.getElementById("exportExcelBtn").addEventListener("click", () => {
+        if(exportDataBuffer.length === 0) return alert("ဒေါင်းလုပ်ဆွဲရန် ဒေတာ မရှိပါ။");
+        const ws = XLSX.utils.json_to_sheet(exportDataBuffer);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "List");
+        const fileName = `${document.getElementById("detailListTitle").innerText}_${new Date().toLocaleDateString('en-CA')}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+    });
 
     // --- History View ---
     document.getElementById("goToHistoryBtn").addEventListener("click", () => {
@@ -665,28 +746,6 @@
         }
         document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
     }
-
-    // --- Employee List View ---
-    document.getElementById("goToEmpListBtn").addEventListener("click", async () => {
-        hideAllSections(); secEmpList.classList.remove("hidden");
-        document.getElementById("empListContent").innerHTML = "<div class='loader-container'><div class='spinner'></div></div>";
-        
-        const snapshot = await get(ref(db, 'employees'));
-        if(!snapshot.exists()) return document.getElementById("empListContent").innerHTML = "<p>ဝန်ထမ်းစာရင်း မရှိသေးပါ။</p>";
-        
-        const emps = snapshot.val();
-        let html = "", count = 0;
-        for(let id in emps) {
-            if(emps[id].agency === adminAgency) {
-                count++;
-                html += `<div class="data-card" style="padding: 10px;">
-                    <strong style="color: #007bff;">${id}</strong> - ${emps[id].name} 
-                    <div style="font-size:12px; color:#777; margin-top:4px;">${emps[id].dept ? 'ဌာန: '+emps[id].dept : ''}</div>
-                </div>`;
-            }
-        }
-        document.getElementById("empListContent").innerHTML = `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
-    });
 
 </script>
 </body>
