@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Manage Employees</title>
+    <style>
+        * { box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #e9ecef; padding: 20px; display: block; margin: 0; }
+        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        button { width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-add { background-color: #28a745; }
+        .btn-add:hover { background-color: #218838; }
+        .btn-remove { background-color: #dc3545; }
+        .btn-remove:hover { background-color: #c82333; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin Management Panel</h2>
+
+    <div class="section">
+        <h3 style="color: #28a745;">➕ ဝန်ထမ်းအသစ် ထည့်ရန်</h3>
+        <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" id="newEmpId" placeholder="ဥပမာ - EMP001">
+        </div>
+        <div class="form-group">
+            <label>ဝန်ထမ်းအမည်</label>
+            <input type="text" id="newEmpName" placeholder="ဥပမာ - Thet Aung">
+        </div>
+        <div class="form-group">
+            <label>အလုပ်ဆိုင်း (Shift)</label>
+            <select id="newEmpShift">
+                <option value="day">နေ့ဆိုင်း (Day Shift)</option>
+                <option value="night">ညဆိုင်း (Night Shift)</option>
+            </select>
+        </div>
+        <button class="btn-add" id="addEmpBtn">ဝန်ထမ်းစာရင်းသွင်းမည်</button>
+    </div>
+
+    <div class="section">
+        <h3 style="color: #dc3545;">🗑️ ဝန်ထမ်းစာရင်းမှ ဖျက်ရန်</h3>
+        <div class="form-group">
+            <label>ဖျက်လိုသော Employee ID ရိုက်ထည့်ပါ</label>
+            <input type="text" id="removeEmpId" placeholder="ဥပမာ - EMP001">
+        </div>
+        <button class="btn-remove" id="removeEmpBtn">ဝန်ထမ်းစာရင်းမှ ပယ်ဖျက်မည်</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, remove, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // သင့်ရဲ့ Firebase Config အစစ်
+    const firebaseConfig = {
+        apiKey: "AIzaSyCsKoGsSo6tOHeX2xbszgj_oyZAqt5DlD0",
+        authDomain: "ferry-time-system.firebaseapp.com",
+        projectId: "ferry-time-system",
+        storageBucket: "ferry-time-system.firebasestorage.app",
+        messagingSenderId: "399802117425",
+        appId: "1:399802117425:web:2337ac6a479b07766f1410"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById("addEmpBtn").addEventListener("click", async () => {
+        const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
+        const empName = document.getElementById("newEmpName").value.trim();
+        const empShift = document.getElementById("newEmpShift").value;
+
+        if (!empId || !empName) return alert("ID နှင့် အမည်ကို ပြည့်စုံစွာ ထည့်သွင်းပေးပါ။");
+
+        await set(ref(db, 'employees/' + empId), {
+            name: empName,
+            shift: empShift
+        });
+
+        alert("ဝန်ထမ်းအသစ် " + empName + " (" + empId + ") ကို အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။");
+        document.getElementById("newEmpId").value = "";
+        document.getElementById("newEmpName").value = "";
+    });
+
+    document.getElementById("removeEmpBtn").addEventListener("click", async () => {
+        const empId = document.getElementById("removeEmpId").value.trim().toUpperCase();
+
+        if (!empId) return alert("ဖျက်လိုသော ID ကို ရိုက်ထည့်ပါ။");
+
+        const empRef = ref(db, 'employees/' + empId);
+        const snapshot = await get(empRef);
+
+        if (snapshot.exists()) {
+            const confirmDelete = confirm("ဤဝန်ထမ်းကို စာရင်းမှ အမှန်တကယ် ဖျက်ရန် သေချာပါသလား?");
+            if (confirmDelete) {
+                await remove(empRef);
+                alert(empId + " ကို စာရင်းမှ အောင်မြင်စွာ ပယ်ဖျက်လိုက်ပါပြီ။");
+                document.getElementById("removeEmpId").value = "";
+            }
+        } else {
+            alert("ထို ID ဖြင့် ဝန်ထမ်း မရှိပါ။ စာလုံးပေါင်း မှန်ကန်မှု ရှိမရှိ ပြန်စစ်ပါ။");
+        }
+    });
+</script>
+</body>
+</html>

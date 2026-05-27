@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agency Shuttle Time System</title>
+    <style>
+        * { box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #f4f6f9; padding: 20px; display: block; margin: 0; }
+        .container { max-width: 400px; margin: 30px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="time"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .hidden { display: none; }
+        .time-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .time-btn { padding: 12px; background: #e9ecef; border: 2px solid transparent; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; }
+        .time-btn.selected { background: #d4edda; border-color: #28a745; color: #155724; }
+        .custom-time-box { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loginSection">
+        <h2>ဝန်ထမ်း Login</h2>
+        <div class="form-group">
+            <label for="empId">Employee ID ရိုက်ထည့်ပါ</label>
+            <input type="text" id="empId" placeholder="ဥပမာ - EMP001">
+        </div>
+        <button id="loginBtn">စနစ်ထဲသို့ဝင်ရန်</button>
+    </div>
+
+    <div id="formSection" class="hidden">
+        <h2>အပြန်ကားအချိန် ရွေးချယ်ရန်</h2>
+        <p style="text-align: center; font-weight: bold; color: #555;">မင်္ဂလာပါ <span id="empNameDisplay"></span></p>
+        
+        <div class="form-group">
+            <label>ကျေးဇူးပြု၍ ပြန်မည့်အချိန်ကို ရွေးပါ -</label>
+            <div id="timeOptionsContainer" class="time-options"></div>
+        </div>
+
+        <div id="customTimeSection" class="form-group hidden custom-time-box">
+            <label for="customTime">ကိုယ်တိုင်ဖြည့်ရန် (Alarm ပုံစံရွေးပါ) -</label>
+            <input type="time" id="customTime">
+        </div>
+
+        <button id="submitBtn" style="background-color: #28a745;">Submit တင်မည်</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // သင့်ရဲ့ Firebase Config အစစ်
+    const firebaseConfig = {
+        apiKey: "AIzaSyCsKoGsSo6tOHeX2xbszgj_oyZAqt5DlD0",
+        authDomain: "ferry-time-system.firebaseapp.com",
+        projectId: "ferry-time-system",
+        storageBucket: "ferry-time-system.firebasestorage.app",
+        messagingSenderId: "399802117425",
+        appId: "1:399802117425:web:2337ac6a479b07766f1410"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let currentEmpId = "";
+    let currentEmpData = null;
+    let selectedTime = "";
+
+    const daySlots = ["17:00 PM", "19:30 PM", "20:30 PM", "ကိုယ်တိုင်ဖြည့်ရန်"];
+    const nightSlots = ["5:00 AM", "7:30 AM", "8:00 AM", "8:30 AM", "ကိုယ်တိုင်ဖြည့်ရန်"];
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedId = localStorage.getItem("savedEmpId");
+        if (savedId) {
+            checkLogin(savedId);
+        }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+        const idInput = document.getElementById("empId").value.trim().toUpperCase();
+        if(!idInput) return alert("ID ရိုက်ထည့်ပါ");
+        checkLogin(idInput);
+    });
+
+    async function checkLogin(empId) {
+        const empRef = ref(db, 'employees/' + empId);
+        const snapshot = await get(empRef);
+        
+        if (snapshot.exists()) {
+            currentEmpId = empId;
+            currentEmpData = snapshot.val();
+            localStorage.setItem("savedEmpId", empId);
+            showFormPage();
+        } else {
+            alert("မမှန်ကန်သော ဝန်ထမ်း ID ဖြစ်နေပါသည်။");
+            localStorage.removeItem("savedEmpId");
+        }
+    }
+
+    function showFormPage() {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("formSection").classList.remove("hidden");
+        document.getElementById("empNameDisplay").innerText = currentEmpData.name + " (" + currentEmpId + ")";
+        
+        const slots = currentEmpData.shift === "day" ? daySlots : nightSlots;
+        const container = document.getElementById("timeOptionsContainer");
+        container.innerHTML = "";
+
+        slots.forEach(slot => {
+            const btn = document.createElement("div");
+            btn.className = "time-btn";
+            btn.innerText = slot;
+            btn.onclick = () => {
+                document.querySelectorAll(".time-btn").forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                
+                if (slot === "ကိုယ်တိုင်ဖြည့်ရန်") {
+                    document.getElementById("customTimeSection").classList.remove("hidden");
+                    selectedTime = "custom";
+                } else {
+                    document.getElementById("customTimeSection").classList.add("hidden");
+                    selectedTime = slot;
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+        let finalTime = selectedTime;
+        if (!finalTime) return alert("ကျေးဇူးပြု၍ ပြန်မည့်အချိန် ရွေးချယ်ပေးပါဦး။");
+
+        if (finalTime === "custom") {
+            const customVal = document.getElementById("customTime").value;
+            if(!customVal) return alert("ကိုယ်တိုင်ပြန်မည့် အချိန်ကို ဖြည့်ပေးပါ။");
+            finalTime = customVal;
+        }
+
+        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
+        const timeNow = new Date().toLocaleTimeString();
+
+        await set(ref(db, `submissions/${today}/${currentEmpId}`), {
+            time: finalTime,
+            submittedAt: timeNow
+        });
+
+        alert("အောင်မြင်စွာ တင်ပြီးပါပြီ။ ဘေးကင်းစွာ ပြန်ပါဦး ခင်ဗျာ။");
+    });
+</script>
+</body>
+</html>
