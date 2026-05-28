@@ -40,7 +40,7 @@
         
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 15px; }
-        input[type="text"], input[type="time"], input[type="date"], input[type="file"], select { width: 100%; padding: 13px 15px; border: 2px solid #e1e5eb; border-radius: 12px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
+        input[type="text"], input[type="time"], input[type="date"], input[type="month"], input[type="file"], select { width: 100%; padding: 13px 15px; border: 2px solid #e1e5eb; border-radius: 12px; font-size: 16px; transition: border-color 0.3s; background-color: white; }
         input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
         
         /* Buttons */
@@ -232,8 +232,41 @@
     </div>
 
     <div id="adminSettingsDiv" class="hidden">
+        
+        <div class="admin-section-box" style="border-color: #ffeeba; background: #fffdf5;">
+            <h3 style="color: #d39e00; margin-top: 0; font-size: 18px;">📅 လစဉ် Attendance Excel ထုတ်ရန်</h3>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">(ပျက်ရက် မထည့်ထားသောသူများအားလုံးကို အလုပ်ဆင်းသည်ဟုသတ်မှတ်ပြီး အလိုအလျောက် 1 ထည့်ပေးပါမည်)</p>
+            <div class="form-group">
+                <label>လ ရွေးချယ်ပါ</label>
+                <input type="month" id="reportMonth">
+            </div>
+            <div class="form-group">
+                <label>ပိတ်ရက်များ သတ်မှတ်ရန် (အဝါရောင်ပြရန်)</label>
+                <input type="text" id="holidayDates" placeholder="ဥပမာ - 5,12,19,26 (ရက်စွဲဂဏန်းများသာ)">
+            </div>
+            
+            <div id="reportLoader" class="loader-container hidden">
+                <div class="spinner"></div>
+                <p style="color: #007bff; font-weight: bold; margin-top: 10px;">Excel ဖိုင် ပြင်ဆင်နေပါသည်...</p>
+            </div>
+            <button class="btn-excel" id="downloadAttendanceBtn" style="margin-bottom: 0;">📥 Attendance Excel ဒေါင်းလုပ်ဆွဲမည်</button>
+        </div>
+
+        <div class="admin-section-box" style="border-color: #f5c6cb;">
+            <h3 style="color: #dc3545; margin-top: 0; font-size: 18px;">❌ ခွင့်/ပျက်ရက် သတ်မှတ်ရန်</h3>
+            <div class="form-group">
+                <label>Employee ID</label>
+                <input type="text" id="absentEmpId" placeholder="ဥပမာ - 29501564">
+            </div>
+            <div class="form-group">
+                <label>ရက်စွဲ (Date)</label>
+                <input type="date" id="absentDate">
+            </div>
+            <button class="btn-delete" id="markAbsentBtn">ပျက်ရက်စာရင်းသွင်းမည်</button>
+        </div>
+
         <div class="admin-section-box">
-            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် အစုလိုက် တင်ရန်</h3>
+            <h3 style="color: #17a2b8; margin-top: 0; font-size: 18px;">📁 Excel (.xlsx) ဖြင့် ဝန်ထမ်းအသစ် အစုလိုက် တင်ရန်</h3>
             <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="padding: 10px; background: white;">
             
             <div id="uploadLoader" class="loader-container hidden">
@@ -259,7 +292,7 @@
         </div>
         
         <div class="admin-section-box" style="border-color: #f5c6cb;">
-            <h3 style="color: #dc3545; margin-top: 0; font-size: 18px;">🗑️ วန်ထမ်းစာရင်း ပယ်ဖျက်ရန် (Excel သို့မဟုတ် ID)</h3>
+            <h3 style="color: #dc3545; margin-top: 0; font-size: 18px;">🗑️ วန်ထမ်းစာရင်း ပယ်ဖျက်ရန်</h3>
             <div class="form-group" style="background: #fff3f3; padding: 10px; border-radius: 8px; border: 1px solid #fecdd3; margin-bottom: 15px;">
                 <label style="color: #dc3545;">📁 Excel ဖိုင်ဖြင့် အစုလိုက် ဖြုတ်ရန်</label>
                 <input type="file" id="deleteExcelFileInput" accept=".xlsx, .xls" style="padding: 5px; background: white;">
@@ -276,7 +309,7 @@
     <button id="closeSettingsBtn" class="btn-back">နောက်သို့ ပြန်သွားမည်</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -348,7 +381,6 @@
     });
 
     function hideAllSections() {
-        // Only hide the main content sections. We handle navbar separately.
         [document.querySelector(".login-wrapper"), secSetup, secForm, secAdmin, secSettings, secHistory, secDetailList].forEach(el => {
             if (el) el.classList.add("hidden");
         });
@@ -407,6 +439,8 @@
         if (isAdmin) {
             document.getElementById("adminSettingsDiv").classList.remove("hidden");
             document.getElementById("userSettingsDiv").classList.add("hidden");
+            document.getElementById("reportMonth").value = getLogicalDate().substring(0,7); 
+            document.getElementById("absentDate").value = getLogicalDate(); 
         } else {
             document.getElementById("userSettingsDiv").classList.remove("hidden");
             document.getElementById("adminSettingsDiv").classList.add("hidden");
@@ -505,7 +539,145 @@
     });
 
     // ==========================================
-    // 4. Admin Setup & Advanced File Management
+    // 4. Admin Mark Absent
+    // ==========================================
+    document.getElementById("markAbsentBtn").addEventListener("click", async () => {
+        const id = document.getElementById("absentEmpId").value.trim().toUpperCase();
+        const date = document.getElementById("absentDate").value;
+        if(!id || !date) return alert("ID နှင့် ရက်စွဲကို ပြည့်စုံစွာထည့်ပါ။");
+
+        const snap = await get(ref(db, 'employees/' + id));
+        if(!snap.exists() || snap.val().agency !== adminAgency) {
+            return alert("❌ ထိုဝန်ထမ်းသည် သင့် Agency စာရင်းတွင် မရှိပါ။");
+        }
+
+        await set(ref(db, `absences/${date}/${id}`), {
+            name: snap.val().name,
+            markedAt: new Date().toISOString()
+        });
+        alert(`✅ ID - ${id} အား ${date} ရက်နေ့အတွက် ပျက်ရက် (Absent) သတ်မှတ်ပြီးပါပြီ။`);
+        document.getElementById("absentEmpId").value = "";
+    });
+
+    // ==========================================
+    // 5. Admin Download Attendance (Colored Excel - AUTO PRESENT IF NOT ABSENT)
+    // ==========================================
+    document.getElementById("downloadAttendanceBtn").addEventListener("click", async () => {
+        const reportMonth = document.getElementById("reportMonth").value; // YYYY-MM
+        if(!reportMonth) return alert("ကျေးဇူးပြု၍ လကို ရွေးချယ်ပါ။");
+        
+        const holidayInput = document.getElementById("holidayDates").value;
+        let holidayArray = [];
+        if(holidayInput) {
+            holidayArray = holidayInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        }
+
+        const loader = document.getElementById("reportLoader");
+        loader.classList.remove("hidden");
+        document.getElementById("downloadAttendanceBtn").disabled = true;
+
+        try {
+            const [year, month] = reportMonth.split('-');
+            const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+
+            // Fetch Employee List
+            const empSnap = await get(ref(db, 'employees'));
+            let myEmps = [];
+            if(empSnap.exists()){
+                const emps = empSnap.val();
+                for(let key in emps){
+                    if(emps[key].agency === adminAgency) {
+                        myEmps.push({ id: key, name: emps[key].name, dept: emps[key].dept });
+                    }
+                }
+            }
+            myEmps.sort((a,b) => a.id.localeCompare(b.id));
+
+            // Fetch Data for the month
+            let absencesData = {};
+            let promises = [];
+            
+            for(let i=1; i<=daysInMonth; i++) {
+                let dStr = `${reportMonth}-${String(i).padStart(2, '0')}`;
+                promises.push(get(ref(db, `absences/${dStr}`)).then(s => absencesData[dStr] = s.val() || {}));
+            }
+            await Promise.all(promises);
+
+            // Construct Excel Structure
+            let ws_data = [];
+            
+            // Header Row
+            let headers = ["No.", "Emp ID", "Name", "Department"];
+            for(let i=1; i<=daysInMonth; i++) headers.push(i);
+            headers.push("Total");
+            headers.push("Amount");
+
+            let headerRow = headers.map(h => ({ 
+                v: h, 
+                s: { fill: { fgColor: { rgb: "FF92D050" } }, font: { bold: true, color: { rgb: "FF000000"} }, alignment: {horizontal: "center"} } 
+            }));
+            ws_data.push(headerRow);
+
+            // Body Rows
+            let rowIndex = 1;
+            for(let emp of myEmps) {
+                let row = [];
+                row.push({ v: rowIndex++ });
+                row.push({ v: emp.id });
+                row.push({ v: emp.name });
+                row.push({ v: emp.dept || "" });
+
+                let totalPresent = 0;
+
+                for(let i=1; i<=daysInMonth; i++) {
+                    let dStr = `${reportMonth}-${String(i).padStart(2, '0')}`;
+                    let isHoliday = holidayArray.includes(i);
+                    let isAbsent = absencesData[dStr] && absencesData[dStr][emp.id];
+
+                    if(isHoliday) {
+                        // Yellow Fill
+                        row.push({ v: "", s: { fill: { fgColor: { rgb: "FFFFFF00" } } } });
+                    } else if(isAbsent) {
+                        // Red Fill
+                        row.push({ v: "", s: { fill: { fgColor: { rgb: "FFFF0000" } } } });
+                    } else {
+                        // Auto Present if not absent and not holiday
+                        row.push({ v: 1, t: 'n', s: { alignment: { horizontal: "center" } } });
+                        totalPresent++;
+                    }
+                }
+                
+                row.push({ v: totalPresent, t: 'n', s: { font: { bold: true }, alignment: { horizontal: "center" } } });
+                row.push({ v: totalPresent * 40, t: 'n', s: { font: { bold: true }, fill: { fgColor: { rgb: "FFD9D9D9" } } } }); 
+
+                ws_data.push(row);
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            
+            // Auto fit column widths
+            const colWidths = [
+                {wch: 5}, {wch: 12}, {wch: 25}, {wch: 15}
+            ];
+            for(let i=1; i<=daysInMonth; i++) colWidths.push({wch: 4});
+            colWidths.push({wch: 6}, {wch: 8});
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+            XLSX.writeFile(wb, `Attendance_${adminAgency.split(' ')[0]}_${reportMonth}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            alert("Error: ဒေါင်းလုပ်ဆွဲရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။");
+        } finally {
+            loader.classList.add("hidden");
+            document.getElementById("downloadAttendanceBtn").disabled = false;
+        }
+    });
+
+    // ==========================================
+    // 6. Admin DB Management (Add/Remove)
     // ==========================================
     document.getElementById("addEmpBtn").addEventListener("click", async () => {
         const empId = document.getElementById("newEmpId").value.trim().toUpperCase();
@@ -621,7 +793,7 @@
         const ws = XLSX.utils.json_to_sheet(conflictExcelData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Conflicts");
-        XLSX.writeFile(wb, `${adminAgency}_စာရင်းရှိပြီးသား_မှားယွင်းမှုစာရင်း_${getLogicalDate()}.xlsx`);
+        XLSX.writeFile(wb, `${adminAgency.split(' ')[0]}_စာရင်းရှိပြီးသား_မှားယွင်းမှုစာရင်း_${getLogicalDate()}.xlsx`);
     });
 
     document.getElementById("uploadDeleteExcelBtn").addEventListener("click", () => {
@@ -699,6 +871,9 @@
         }
     });
 
+    // ==========================================
+    // 7. Dashboard Engine
+    // ==========================================
     function loadDashboardStats() {
         if(!isAdmin) return; const today = getLogicalDate();
         onValue(ref(db, 'employees'), (snapshot) => {
@@ -709,6 +884,7 @@
                     if (emps[k].agency === adminAgency) { totalMap[k] = emps[k]; listTotalEmps.push({ id: k, ...emps[k] }); }
                 }
             }
+            listTotalEmps.sort((a,b) => a.id.localeCompare(b.id));
             document.getElementById("countTotal").innerText = listTotalEmps.length;
             
             onValue(ref(db, `submissions/${today}`), (subSnapshot) => {
@@ -724,9 +900,12 @@
                         }
                     }
                 }
+                listSubmittedEmps.sort((a,b) => a.id.localeCompare(b.id));
                 document.getElementById("countSubmitted").innerText = listSubmittedEmps.length;
+                
                 listRemainingEmps = [];
                 for (let k in totalMap) { if (!subMap[k]) listRemainingEmps.push({ id: k, ...totalMap[k] }); }
+                listRemainingEmps.sort((a,b) => a.id.localeCompare(b.id));
                 document.getElementById("countRemaining").innerText = listRemainingEmps.length;
 
                 let bdHtml = "";
@@ -791,11 +970,18 @@
         const snapshot = await get(ref(db, `submissions/${date}`));
         if(!snapshot.exists()) { document.getElementById("historyContent").innerHTML = "<p style='text-align:center;color:red;'>ရွေးချယ်ထားသော ရက်အတွက် စာရင်းမရှိပါ။</p>"; return; }
         const subs = snapshot.val(); let html = "", count = 0;
+        
+        let histArray = [];
         for(let id in subs) {
             if(subs[id].agency === adminAgency) {
-                count++;
-                html += `<div class="data-card"><strong>${subs[id].name} (${id})</strong><br>🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${subs[id].time}</span><br>🏢 အဆောင်: ${subs[id].dormitory || '-'} | 🕒 ဆိုင်း: ${subs[id].shift === 'day' ? 'နေ့' : 'ည'}</div>`;
+                histArray.push({id: id, ...subs[id]});
             }
+        }
+        histArray.sort((a,b) => a.id.localeCompare(b.id));
+
+        for(let e of histArray) {
+            count++;
+            html += `<div class="data-card"><strong>${e.name} (${e.id})</strong><br>🚗 ပြန်မည့်အချိန်: <span style="color: #28a745; font-weight: bold;">${e.time}</span><br>🏢 အဆောင်: ${e.dormitory || '-'} | 🕒 ဆိုင်း: ${e.shift === 'day' ? 'နေ့' : 'ည'}<br>${e.editReason ? `<span style="color: #dc3545; font-size: 13px; display: block; margin-top: 5px;">* ပြင်ဆင်ရ: ${e.editReason}</span>` : ""}</div>`;
         }
         document.getElementById("historyContent").innerHTML = count === 0 ? "<p style='text-align:center;color:red;'>သင့် Agency အတွက် စာရင်းမရှိပါ။</p>" : `<p style='text-align:right; font-weight:bold; color:#007bff;'>စုစုပေါင်း: ${count} ဦး</p>` + html;
     }
