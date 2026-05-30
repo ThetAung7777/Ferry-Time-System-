@@ -234,15 +234,15 @@
     <div id="adminSettingsDiv" class="hidden">
         
         <div class="admin-section-box" style="border-color: #ffeeba; background: #fffdf5;">
-            <h3 style="color: #d39e00; margin-top: 0; font-size: 18px;">📅 လစဉ် Attendance Excel ထုတ်ရန်</h3>
-            <p style="font-size: 12px; color: #666; margin-top: -5px;">(ပျက်ရက် မထည့်ထားသောသူများအားလုံးကို အလုပ်ဆင်းသည်ဟုသတ်မှတ်ပြီး အလိုအလျောက် 1 ထည့်ပေးပါမည်)</p>
+            <h3 style="color: #d39e00; margin-top: 0; font-size: 18px;">📅 လစဉ် Attendance Excel (21 - 20)</h3>
+            <p style="font-size: 12px; color: #666; margin-top: -5px;">(လစာတွက်သည့်စက်ဝန်း ယခင်လ ၂၁ ရက်မှ ယခုလ ၂၀ ရက် အထိ။ ပျက်ရက်စာရင်း မသွင်းထားသူများအားလုံးကို အလုပ်ဆင်းသည်ဟုသတ်မှတ်ကာ Auto 1 ထည့်ပေးပါမည်)</p>
             <div class="form-group">
-                <label>လ ရွေးချယ်ပါ</label>
+                <label>လ ရွေးချယ်ပါ (ယခုလ ၂၀ အထိ)</label>
                 <input type="month" id="reportMonth">
             </div>
             <div class="form-group">
                 <label>ပိတ်ရက်များ သတ်မှတ်ရန် (အဝါရောင်ပြရန်)</label>
-                <input type="text" id="holidayDates" placeholder="ဥပမာ - 5,12,19,26 (ရက်စွဲဂဏန်းများသာ)">
+                <input type="text" id="holidayDates" placeholder="ဥပမာ - 26, 2, 9, 16 (ရက်စွဲဂဏန်းများသာ)">
             </div>
             
             <div id="reportLoader" class="loader-container hidden">
@@ -353,6 +353,7 @@
     const dropName = document.getElementById("dropName");
     const dropId = document.getElementById("dropId");
 
+    // Auto logical date mapping (Cut off 9 AM)
     function getLogicalDate() {
         const now = new Date();
         if (now.getHours() < 9) now.setDate(now.getDate() - 1); 
@@ -560,10 +561,10 @@
     });
 
     // ==========================================
-    // 5. Admin Download Attendance (Colored Excel - AUTO PRESENT IF NOT ABSENT)
+    // 5. Admin Download Attendance (21 to 20 Cycle / Auto 1)
     // ==========================================
     document.getElementById("downloadAttendanceBtn").addEventListener("click", async () => {
-        const reportMonth = document.getElementById("reportMonth").value; // YYYY-MM
+        const reportMonth = document.getElementById("reportMonth").value; // e.g. "2026-06"
         if(!reportMonth) return alert("ကျေးဇူးပြု၍ လကို ရွေးချယ်ပါ။");
         
         const holidayInput = document.getElementById("holidayDates").value;
@@ -577,8 +578,21 @@
         document.getElementById("downloadAttendanceBtn").disabled = true;
 
         try {
-            const [year, month] = reportMonth.split('-');
-            const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+            // Calculate 21st of prev month to 20th of current month
+            const [yearStr, monthStr] = reportMonth.split('-');
+            const y = parseInt(yearStr);
+            const m = parseInt(monthStr) - 1; // JS Date Month is 0-indexed
+
+            const startDate = new Date(y, m - 1, 21); // Prev month 21st
+            const endDate = new Date(y, m, 20); // Current month 20th
+
+            let dateArray = [];
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const dY = d.getFullYear();
+                const dM = String(d.getMonth() + 1).padStart(2, '0');
+                const dD = String(d.getDate()).padStart(2, '0');
+                dateArray.push({ full: `${dY}-${dM}-${dD}`, day: parseInt(dD) });
+            }
 
             // Fetch Employee List
             const empSnap = await get(ref(db, 'employees'));
@@ -593,13 +607,11 @@
             }
             myEmps.sort((a,b) => a.id.localeCompare(b.id));
 
-            // Fetch Data for the month
+            // Fetch Absences Data only (Auto present mode)
             let absencesData = {};
             let promises = [];
-            
-            for(let i=1; i<=daysInMonth; i++) {
-                let dStr = `${reportMonth}-${String(i).padStart(2, '0')}`;
-                promises.push(get(ref(db, `absences/${dStr}`)).then(s => absencesData[dStr] = s.val() || {}));
+            for(let dObj of dateArray) {
+                promises.push(get(ref(db, `absences/${dObj.full}`)).then(s => absencesData[dObj.full] = s.val() || {}));
             }
             await Promise.all(promises);
 
@@ -608,7 +620,7 @@
             
             // Header Row
             let headers = ["No.", "Emp ID", "Name", "Department"];
-            for(let i=1; i<=daysInMonth; i++) headers.push(i);
+            for(let dObj of dateArray) headers.push(dObj.day);
             headers.push("Total");
             headers.push("Amount");
 
@@ -629,19 +641,18 @@
 
                 let totalPresent = 0;
 
-                for(let i=1; i<=daysInMonth; i++) {
-                    let dStr = `${reportMonth}-${String(i).padStart(2, '0')}`;
-                    let isHoliday = holidayArray.includes(i);
-                    let isAbsent = absencesData[dStr] && absencesData[dStr][emp.id];
+                for(let dObj of dateArray) {
+                    let isHoliday = holidayArray.includes(dObj.day);
+                    let isAbsent = absencesData[dObj.full] && absencesData[dObj.full][emp.id];
 
                     if(isHoliday) {
-                        // Yellow Fill
+                        // Yellow Fill for Holiday
                         row.push({ v: "", s: { fill: { fgColor: { rgb: "FFFFFF00" } } } });
                     } else if(isAbsent) {
-                        // Red Fill
+                        // Red Fill for Absent
                         row.push({ v: "", s: { fill: { fgColor: { rgb: "FFFF0000" } } } });
                     } else {
-                        // Auto Present if not absent and not holiday
+                        // Auto Present!
                         row.push({ v: 1, t: 'n', s: { alignment: { horizontal: "center" } } });
                         totalPresent++;
                     }
@@ -656,10 +667,8 @@
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             
             // Auto fit column widths
-            const colWidths = [
-                {wch: 5}, {wch: 12}, {wch: 25}, {wch: 15}
-            ];
-            for(let i=1; i<=daysInMonth; i++) colWidths.push({wch: 4});
+            const colWidths = [{wch: 5}, {wch: 12}, {wch: 25}, {wch: 15}];
+            for(let i=0; i<dateArray.length; i++) colWidths.push({wch: 4});
             colWidths.push({wch: 6}, {wch: 8});
             ws['!cols'] = colWidths;
 
